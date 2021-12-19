@@ -1,0 +1,281 @@
+1. login to MySQL
+-->	 
+	   C:\Users\gaurav>mysql -u root -p                                                                                      
+    	   Enter password: ****
+
+===============================================================
+
+2. list different database in MySQL
+-->	 mysql> show databases;
+
+		+--------------------------+
+		| Database                 |
+		+--------------------------+
+		| dac                      |
+		| information_schema   	   |
+		| mysql                    |
+		| performance_schema       |
+		| sakila                   |
+		| sys                      |
+		| world                    |
+		+--------------------------+
+		
+===============================================================
+
+3. How to connect to specific database
+-->
+	mysql> use dac;
+	Database changed
+
+===============================================================
+
+4. List all the tables available in given database
+-->
+	mysql> show tables;
+		+-----------------+
+		| Tables_in_dac	  |
+		+-----------------+
+		| bonus           |
+		| dept            |
+		| dummy           |
+		| emp             |
+		| salgrade        |
+		+-----------------+
+	5 rows in set (0.00 sec)
+
+===============================================================
+
+5. Switch from one database to other
+-->
+	
+
+===============================================================
+
+6. Run the script "SampleScott_Schema.sql" in your database
+-->
+	mysql> source C:\Users\Shivam_TS\Desktop\ACTS Pune\official Notes\DBMS\Day01\SampleScott_Schema.sql
+						
+					             OR
+
+	C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql --user=root --password=root 
+	-D dac < "C:\Users\Shivam_TS\Desktop\ACTS Pune\official Notes\DBMS\Day01\SampleScott_Schema.sql"
+
+===============================================================
+
+7. List the tables that you have in the database now
+-->
+	mysql> show tables;
+	
+		+-----------------+
+		| Tables_in_dac   |
+		+-----------------+
+		| bonus           |
+		| dept            |
+		| dummy           |
+		| emp             |
+		| salgrade        |
+		+-----------------+
+	5 rows in set (0.00 sec)
+
+===============================================================
+
+8. Describe the structure of each table in MySQL
+-->
+	mysql> describe bonus;describe dept;describe dummy;describe emp;describe salgrade;
+	
+		+-------+--------------+------+-----+---------+-------+
+		| Field | Type         | Null | Key | Default | Extra |
+		+-------+--------------+------+-----+---------+-------+
+		| ENAME | varchar(10)  | YES  |     | NULL    |       |
+		| JOB   | varchar(9)   | YES  |     | NULL    |       |
+		| SAL   | int unsigned | YES  |     | NULL    |       |
+		| COMM  | int unsigned | YES  |     | NULL    |       |
+		+-------+--------------+------+-----+---------+-------+
+
+
+		+--------+--------------+------+-----+---------+-------+
+		| Field  | Type         | Null | Key | Default | Extra |
+		+--------+--------------+------+-----+---------+-------+
+		| DEPTNO | int unsigned | YES  |     | NULL    |       |
+		| DNAME  | varchar(14)  | YES  |     | NULL    |       |
+		| LOC    | varchar(13)  | YES  |     | NULL    |       |
+		+--------+--------------+------+-----+---------+-------+
+
+
+		+-------+------+------+-----+---------+-------+
+		| Field | Type | Null | Key | Default | Extra |
+		+-------+------+------+-----+---------+-------+
+		| DUMMY | int  | YES  |     | NULL    |       |
+		+-------+------+------+-----+---------+-------+
+
+
+		+----------+--------------+------+-----+---------+-------+
+		| Field    | Type         | Null | Key | Default | Extra |
+		+----------+--------------+------+-----+---------+-------+
+		| EMPNO    | int unsigned | NO   |     | NULL    |       |
+		| ENAME    | varchar(10)  | YES  |     | NULL    |       |
+		| JOB      | varchar(9)   | YES  |     | NULL    |       |
+		| MGR      | int unsigned | YES  |     | NULL    |       |
+		| HIREDATE | date         | YES  |     | NULL    |       |
+		| SAL      | float        | YES  |     | NULL    |       |
+		| COMM     | float        | YES  |     | NULL    |       |
+		| DEPTNO   | int unsigned | YES  |     | NULL    |       |
+		+----------+--------------+------+-----+---------+-------+
+
+
+		+-------+------+------+-----+---------+-------+
+		| Field | Type | Null | Key | Default | Extra |
+		+-------+------+------+-----+---------+-------+
+		| GRADE | int  | YES  |     | NULL    |       |
+		| LOSAL | int  | YES  |     | NULL    |       |
+		| HISAL | int  | YES  |     | NULL    |       |
+		+-------+------+------+-----+---------+-------+
+
+==============================================================
+
+9. Export the table data in external file in MySQL
+-->
+	SHOW VARIABLES LIKE "secure_file_priv";
+	select * from emp into outfile "C:\\ProgramData\\MySQL\\MySQL Server 8.0\\Uploads\\emp.txt";
+
+==============================================================
+
+10. Show the data from each table in MySQL
+-->
+	mysql> select * from bonus;select * from dept;select * from dummy;select * from emp;select * from salgrade;
+	Empty set (0.05 sec)
+
+		+--------+------------+----------+
+		| DEPTNO | DNAME      | LOC      |
+		+--------+------------+----------+
+		|     10 | ACCOUNTING | NEW YORK |
+		|     20 | RESEARCH   | DALLAS   |
+		|     30 | SALES      | CHICAGO  |
+		|     40 | OPERATIONS | BOSTON   |
+		+--------+------------+----------+
+	4 rows in set (0.03 sec)
+
+		+-------+
+		| DUMMY |
+		+-------+
+		|     0 |
+		+-------+
+	1 row in set (0.00 sec)
+
+		+-------+--------+-----------+------+------------+------+------+--------+
+		| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+		+-------+--------+-----------+------+------------+------+------+--------+
+		|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |
+		|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |
+		|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |
+		|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |
+		|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |
+		|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |
+		|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |
+		|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |
+		|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100 | NULL |     20 |
+		|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |
+		|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |
+		|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |     10 |
+		+-------+--------+-----------+------+------------+------+------+--------+
+	14 rows in set (0.01 sec)
+
+		+-------+-------+-------+
+		| GRADE | LOSAL | HISAL |
+		+-------+-------+-------+
+		|     1 |   700 |  1200 |
+		|     2 |  1201 |  1400 |
+		|     3 |  1401 |  2000 |
+		|     4 |  2001 |  3000 |
+		|     5 |  3001 |  9999 |
+		+-------+-------+-------+
+
+===============================================================
+
+11. Interact with MySQL WorkBench Software
+-->
+	
+
+===============================================================
+
+12. Clear the MySQL command prompt
+--> 	
+	system cls;
+
+===============================================================
+
+13. Fire command to check current user in database
+-->
+	mysql> select current_user();
+	
+		+----------------+
+		| current_user() |
+		+----------------+
+		| root@localhost |
+		+----------------+
+
+===============================================================
+
+14. Fire command to see current date and time of server
+-->
+	mysql> select Current_timestamp as 'Current data and time';
+		
+		+-----------------------+
+		| Current data and time |
+		+-----------------------+
+		| 2021-10-18 16:47:28   |
+		+-----------------------+
+		
+					or
+					
+	mysql> select sysdate();
+	
+		+---------------------+
+		| sysdate()           |
+		+---------------------+
+		| 2021-10-18 16:48:38 |
+		+---------------------+
+
+================================================================
+
+15. Fire command to assign the output to select command to variable in MySQL
+--> 
+	set @var=(select curdate());
+      select curdate() into @var3;
+      select  deptno into @var4 from emp where empno=7369;
+   
+	
+16. Print the value stored in variable on the screen
+-->   select @var;
+      select @var3;
+      select @var4;
+	
+
+17. Observe the output of command "select DATE(current_date() +2),current_date();"
+-->
+	mysql> select DATE(current_date() +2),current_date();
+		
+		+-------------------------+----------------+
+		| DATE(current_date() +2) | current_date() |
+		+-------------------------+----------------+
+		| 2021-10-20              | 2021-10-18     |
+		+-------------------------+----------------+
+		
+=================================================================
+
+18. Observe the command "select null;"
+      Identify what is null
+	 
+-->
+	mysql> select null;
+		
+		+------+
+		| NULL |
+		+------+
+		| NULL |
+		+------+
+	  
+=================================================================
+

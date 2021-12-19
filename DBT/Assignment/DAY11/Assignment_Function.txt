@@ -1,0 +1,87 @@
+Functions
+
+1. Write a program to take the input as empno and return the experience of employee in terms of number of years.
+--->
+		delimiter $$
+		drop function if exists experience_calc $$
+		create function experience_calc(empno1 int)
+		returns int
+		deterministic
+		BEGIN
+		declare result int;
+		set result=(select year(curdate())-year(hiredate) from emp where empno=empno1);
+		return(result);
+		END $$
+
+		select * from emp;
+		select experience_calc(7499);
+
+2. Write a program to take the input as deptno and return the comma separated list of employee names
+--->
+		delimiter $$
+		drop function if exists emp_list $$
+		create function emp_list(p_deptno int)
+		returns varchar(2000)
+		deterministic
+		begin
+			DECLARE v_emp_list,v_ename VARCHAR(2000);
+			DECLARE is_not_found BOOLEAN;
+			DECLARE c1 CURSOR FOR select ename FROM emp WHERE deptno=p_deptno;
+			DECLARE continue handler for not found set is_not_found=true;
+			OPEN c1;
+			
+			curloop: LOOP
+			   FETCH c1 INTO v_ename;
+			   IF is_not_found THEN
+				  LEAVE curloop;
+			   END IF;
+			   IF v_emp_list IS NULL THEN
+				   SET v_emp_list = v_ename;
+			   ELSE
+				   SET v_emp_list = CONCAT(v_emp_list,', ' ,v_ename);
+			   END IF;
+			END LOOP;
+			CLOSE c1;
+			return v_emp_list;
+		end $$
+
+		use dac;
+		select emp_list(10);
+
+3. Add a new column incentive to emp table. Write a program to calculate and update the incentive using following logic.
+     If employees salary is more then avg salary of dept then incentive is 0
+	 If employees salary is less then avg salary of dept then incentive is 10% of salary
+-->
+		delimiter $$
+		drop procedure if exists incent $$
+		create procedure incent( )
+		begin
+		create temporary table emp_t as select * from emp; 
+		alter table emp_t add incentive int;
+
+		update emp_t set incentive=0 where sal>(select avg(sal) from emp group by DEPTNO having emp_t.deptno=emp.deptno);
+
+		update emp_t set incentive=sal+(sal*.1) where sal<(select avg(sal) from emp group by DEPTNO having emp_t.deptno=emp.deptno);
+
+		drop table emp;
+		create table emp as select * from emp_t;
+
+		end$$
+
+		call incent();
+		select * from emp;
+
+4. Write a program to get the count of employees working in provided deptno
+-->
+		delimiter $$
+		
+		drop function if exists emp_count $$
+		create function emp_count(deptno1 int)
+		RETURNS int
+		DETERMINISTIC
+		BEGIN
+		RETURN (SELECT COUNT(*) FROM EMP WHERE DEPTNO=DEPTNO1);
+		END$$
+
+		USE DAC;
+		SELECT EMP_COUNT(20);

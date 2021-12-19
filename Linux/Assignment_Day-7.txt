@@ -1,0 +1,461 @@
+[Day 7 Theory]
+
+Options with if --> https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
+
+Practice ques
+-------------
+1. Write a script that performs following operations on the given set of files?	(15)
+
+a) displays the total count of files
+
+b) displays the count of *.pdf files and *.docx
+
+c) rename all *.pdf to *.docx
+
+d) displays the count of *.pdf files and *.docx
+
+e) displays only those files which have underscore '_' in their names
+
+msexchange.qlv
+Necessary_Compliance-Violations.docx
+New_Doc_12-23-2020 16.51.pdf
+Open_Cases.csv
+OPS-94632_new.tar
+OS-Windows.pdf
+QQL.json
+Ransomware.docx
+Red_Hat_Reference Guide.pdf
+Script_Analysis.xlsx
+Script_page.jpg
+SolarWinds_Supply-Chain_Attack_UDdashboard.json
+Splunk_PC_App.png
+Splunk_VM_App.png
+Studio_Malware_July_2013.xlsx
+Troubleshooting-Agent-Permission-Issues-for-Windows.pdf
+UDC_Demo_20210106.xml
+Video-2020-11-10-at-7.12.43-PM.mp4
+VMware-workstation-full-15.5.5-16285975.exe
+VMware-workstation-full-16.0.0-16894299.exe
+WhatsApp-Image-2020-11-05-at-2.47.06-PM.jpeg
+win.txt
+
+Solution:
+-----------
+
+[bisenboy@localhost day7]$ cat Q1a.sh
+
+#!/bin/bash
+
+num=$(ls /home/bisenboy/folder | wc -l)
+echo "Your file count is : $num"
+
+d=$(ls /home/bisenboy/folder | grep ".pdf" | wc -l)
+echo "the no. of pdf files are : $d"
+
+c=$(ls /home/bisenboy/folder | grep ".docx" | wc -l)
+echo "the no. of docx files are : $c"
+
+rename .pdf .docx /home/bisenboy/folder/*.pdf
+
+echo "here comes the magic pdf file to doc"
+
+echo "------------------------------------"
+
+sleep 5s
+
+d=$(ls /home/bisenboy/folder | grep ".pdf" | wc -l)
+echo "the no. of pdf files are : $d"
+
+c=$(ls /home/bisenboy/folder | grep ".docx" | wc -l)
+echo "the no. of docx files are : $c"
+echo "$( ls /home/bisenboy/folder | grep "_")"
+
+[bisenboy@localhost day7]$ ./Q1a.sh 
+Your file count is : 22
+the no. of pdf files are : 4
+the no. of docx files are : 2
+here comes the magic pdf file to doc
+------------------------------------
+the no. of pdf files are : 0
+the no. of docx files are : 6
+essary_Compliance_Violations.docx
+New_Doc_12-23-2020_16.51.docx
+Open_Cases.csv
+OPS-94632_new.tar
+Red_Hat_Reference_Guide.docx
+Script_Analysis.xlsx
+Script_page.jpg
+SolarWinds_Supply-Chain_Attack_UDdashboard.json
+Splunk_PC_App.png
+Splunk_VM_App.png
+Studio_Malware_July_2013.xlsx
+Troubleshooting_Agent_Permission_Issues_for_Windows.docx
+UDC_Demo_20210106.xml
+Video_2020-11-10_at_7.12.43_PM.mp4
+WhatsApp_Image_2020-11-05_at_2.47.06_PM.jpeg
+
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+2. Write a script that displays the user information on the linux box in the following format:	(10)
+Username	Shell assigned to that user
+Solution:
+------------
+
+#!/bin/bash
+echo " `whoami` -------> $SHELL"
+
+[bisenboy@localhost day7]$ ./Q2.sh
+ bisenboy -------> /bin/bash
+[bisenboy@localhost day7]$ 
+
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+3.Write a command that fetches the list of all files under /root directory that are more than 2KB in size
+Solution:
+---------
+
+[root@localhost ~]# vi Q3.sh
+[root@localhost ~]# ./Q3.sh
+/root/original-ks.cfg
+/root/anaconda-ks.cfg
+/root/.bash_history
+/root/.viminfo
+/root/prog.sh
+/root/prog2.sh
+[root@localhost ~]# cat Q3.sh
+#!/bin/bash
+echo "`find /root -type f -size +2000c`"
+
+
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+4.Create a script that asks for a user name and add that user with password same as that of user name. The user added should be assigned nologin shell
+Solution:
+-----------
+
+[root@localhost ~]# cat Q4.sh
+#!/bin/bash
+read -p "enter the username for the user :" usr
+
+useradd $usr  
+echo "$usr" | passwd $usr --stdin
+
+usermod -s /bin/nologin/ $usr
+[root@localhost ~]# ./Q4.sh 
+enter the username for the user :hello
+Changing password for user hello.
+passwd: all authentication tokens updated successfully.
+[root@localhost ~]#
+
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+5.Create a calculator program in bash that takes two numbers (integers) and display menu to the user for various mathematical operations. Hint: Switch Case Break
+Solution:
+---------
+
+[root@localhost ~]# cat Q5.sh
+#!/bin/bash
+echo "Enter Two Number : "
+read a
+read b
+echo "Enter Your Choice"
+echo "1. Addition"
+echo "2. Subtraction"
+echo "3. Multiplication"
+echo "4. Division"
+read ch
+
+case $ch in
+  1)res=`echo $a + $b | bc`
+  ;;
+  2)res=`echo $a - $b | bc`
+  ;;
+  3)res=`echo $a \* $b | bc`
+  ;;
+  4)res=`echo "scale=2; $a / $b" | bc`
+  ;;
+esac
+echo "Result : $res"
+
+[root@localhost ~]# ./Q5.sh
+Enter Two Number : 
+5
+2
+Enter Your Choice
+1. Addition
+2. Subtraction
+3. Multiplication
+4. Division
+3
+Result : 10
+[root@localhost ~]# ./Q5.sh
+Enter Two Number : 
+5
+1
+Enter Your Choice
+1. Addition
+2. Subtraction
+3. Multiplication
+4. Division
+1
+Result : 6
+[root@localhost ~]# ./Q5.sh
+Enter Two Number : 
+5
+3
+Enter Your Choice
+1. Addition
+2. Subtraction
+3. Multiplication
+4. Division
+2
+Result : 2
+[root@localhost ~]# ./Q5.sh
+Enter Two Number : 
+10
+2
+Enter Your Choice
+1. Addition
+2. Subtraction
+3. Multiplication
+4. Division
+4
+Result : 5.00
+
+------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+6.Create 2 VMs - both CentOS 7 (with fresh snapshots) with names - machineA and machineB
+	1. From machineA copy any file to machineB
+	2. From machineA - create a dir named 'testdir' on machineB
+Solution:
+------------
+Part-1
+-------
+Step-1) On first CentOS machine check the IP address using the command-
+	ip a | grep -A2 "ens33" | grep "inet" | grep -Po "\d+\.\d+\.\d+\.\d+" | head -n1
+
+Step-2) Then Check if the ssh connection status is active or not on both the machines using the command-
+		service sshd status
+
+Step-4)To copy files from machineA to machineB-
+		scp /home/machineA/file.txt machineB@192.168.182.128:/home/machineB/
+
+Part-2
+------
+Step-1)On first CentOS machine terminal run the command-
+		ssh machineB@192.168.182.128                   #ssh <username_of_other_machine>@<IP_address_of_other_machine>
+
+Step-2)Now we are logged in as a user of other machine. To make a directory on machineB use command-
+		mkdir /home/machineB/testdir
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+	
+7)Create a script that depicts sending the process to background so that the next command in sequence can run without wait.
+Solution:
+----------
+
+#!/bin/bash
+
+echo "Initialisizing sleep 30s command and sending it to background"
+sleep 30s & ; jobs
+
+echo "Now running pstree command while sleep 30s runs in background"
+pstree ; jobs
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+8.Create a script that displays the system information like: OS name, kernel version, RAM, etc.
+Solution:
+----------
+
+[bisenboy@localhost day7]$ cat Q8.sh
+#!/bin/bash
+echo "Here are the details"
+
+cat /etc/system-release
+echo "version name ----> `uname -v`"
+echo "OS details -----> `uname -o`"
+echo "machine details ----> `uname -m`"
+echo "Ram size                 : `cat /proc/meminfo | grep "MemTotal" |awk '{print $2," ",$3}
+--------------------------------------------------------------------------------------------------------------------------------------------
+[bisenboy@localhost day7]$ ./Q8.sh
+Here are the details
+CentOS Linux release 7.9.2009 (Core)
+version name ----> #1 SMP Mon Oct 19 16:18:59 UTC 2020
+OS details -----> GNU/Linux
+machine details ----> x86_64
+Ram size                 : 1995676   kB
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+9.Create a shell script to find the largest among the 3 given numbers
+Solution:
+----------
+
+[gauravbisen@localhost ~]$ cat greatest.sh
+read -p "enter n1: " num1
+read -p "enter n2: " num2
+read -p "enter n3: " num3
+
+sum=$(((( $num1 + $num2)) + $num3 ))
+
+echo "sum :  $sum "
+
+if [ $num1 -gt $num2 ] && [ $num1 -gt $num3 ]
+then
+echo "Greatest num:" $num1
+elif [ $num2 -gt $num1 ] && [ $num2 -gt $num3 ]
+then
+echo "Greatest num:" $num2
+else
+echo "Greatest num:" $num3
+fi
+--------------------------------------------------------------------------------------------------------------------------------------------
+[gauravbisen@localhost ~]$ ./greatest.sh
+enter n1: 25
+enter n2: 26
+enter n3: 27
+sum :  78 
+Greatest num: 27
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+10.Create a shell program to check whether a given string is palindrome
+Solution:
+----------
+
+[bisenboy@localhost day7]$ cat Q10.sh
+#!/bin/bash
+
+echo "Input the string without space"
+read str
+for i in $(seq 0 ${#str}) ; do
+        revstr=${str:$i:1}$revstr
+done
+echo "The given string is " $str
+echo "Its reverse is " $revstr
+if [ "$str" = "$revstr" ]; then
+        echo "It is a palindrome."
+else
+        echo "It is not a palindrome."
+fi
+
+----------------------------------------------------------------------
+
+[bisenboy@localhost day7]$ ./Q10.sh 
+Input the string without space
+aabbaa
+The given string is  aabbaa
+Its reverse is  aabbaa
+It is a palindrome.
+[bisenboy@localhost day7]$ ./Q10.sh 
+Input the string without space
+aabbb
+The given string is  aabbb
+Its reverse is  bbbaa
+It is not a palindrome.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+11.Create a shell program to count number of words, characters, white spaces and special symbols in a given text
+Solution:
+----------
+
+[bisenboy@localhost day7]$ cat Q11.sh 
+#!/bin/bash
+
+read -p "Enter the txt you want to check My frnd : " txt
+wrd=$(echo -n "$txt" | wc -w)
+chr=$(echo -n "$txt" | wc -c)
+ss=$(expr length "${txt//[^\~!@#$&%*()]/}")
+
+echo "The Number of words is --->  $wrd"
+echo "The Number of characters are --->  $chr"
+echo "The Number of whitespace is ----> $(expr length "$txt" - length `echo "$txt" | sed "s/ //g"`) "
+echo "The Number of Special symbols are ---> $ss"
+
+----------------------------------------------------------------------
+
+[bisenboy@localhost day7]$ ./Q11.sh 
+Enter the txt you want to check My frnd : hello @#$!% w rld
+The Number of words is --->  4
+The Number of characters are --->  17
+The Number of whitespace is ----> 3 
+The Number of Special symbols are ---> 5
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+12.Create a script to remove all empty lines from a file
+Solution:
+-----------
+
+[bisenboy@localhost Q12]$ cat input.txt 
+hello guys
+
+we are in Cdac
+
+Its in Pune 
+
+but currently
+
+
+it is vertually batch
+so enjoy
+
+----------------------------------------------------------------------
+
+[bisenboy@localhost Q12]$ ./Q12.sh 
++ sed -i '/^$/d' input.txt
++ cat input.txt
+hello guys
+we are in Cdac
+Its in Pune 
+but currently
+it is vertually batch
+so enjoy
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+13.Create a script that fetches only the IP address of the machine from output of ifconfig command
+[root@ljhamb edac_os]#
+Solution:
+-----------
+
+[bisenboy@localhost day7]$ ./Q13.sh
+ Your IP address is ----->  192.168.153.131
+
+----------------------------------------------------------------------
+
+[bisenboy@localhost day7]$ cat Q13.sh
+#!/bin/bash
+echo " Your IP address is ----->  $(ifconfig | grep -A2 "ens33" | grep "inet" | grep -Po "\d+\.\d+\.\d+\.\d+" | head -n1)"
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+14.How to run the c program in bash
+Solution:
+----------
+create a file using  '.c' extension.
+after creation enter 
+gcc filename.c -o newfilename.sh
+./newfilename.sh
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

@@ -1,0 +1,293 @@
+1) Display all records in EMP table those were joined before SCOTT joined?
+
+	select e.* from emp e join emp h on e.HIREDATE<h.HIREDATE where h.HIREDATE in (select hiredate from emp where h.ename='scott');
+	
+	+-------+--------+-----------+------+------------+------+------+--------+
+	| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+	+-------+--------+-----------+------+------------+------+------+--------+
+	|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |
+	|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |
+	|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |
+	|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |
+	|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |
+	|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |
+	|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+	|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+	|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |
+	|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |
+	|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |
+	|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   NULL |
+	+-------+--------+-----------+------+------------+------+------+--------+
+
+2) Display details of department where department has 3 employees?
+	 
+	select dNAME from dept WHERE DEPTNO IN(SELECT DEPTNO FROM EMP GROUP BY DEPTNO HAVING COUNT(*)=3);
+	
+	+------------+
+	| dNAME      |
+	+------------+
+	| ACCOUNTING |
+	+------------+
+
+3) Display details of department with Minimum salary and maximum salary?
+	
+	mysql> select dname,d.deptno,sal from dept d join emp e on e.deptno=d.deptno where e.sal = (select max(sal) from emp) or e.sal = (select min(sal) from emp);
++------------+--------+------+
+| dname      | deptno | sal  |
++------------+--------+------+
+| ACCOUNTING |     10 | 5000 |
+| RESEARCH   |     20 |  800 |
++------------+--------+------+
+	
+4) Display all ename, sal, deptno,dname from emp, dept table where all department which has employees as well as department does not have any employees. This query should include non matching rows.
+	 
+	select ename, sal, dept.deptno, dname from emp right join dept on emp.deptno=dept.deptno;
+	
+	+--------+------+--------+------------+
+	| ename  | sal  | deptno | dname      |
+	+--------+------+--------+------------+
+	| MILLER | 1300 |     10 | ACCOUNTING |
+	| KING   | 5000 |     10 | ACCOUNTING |
+	| CLARK  | 2450 |     10 | ACCOUNTING |
+	| FORD   | 3000 |     20 | RESEARCH   |
+	| ADAMS  | 1100 |     20 | RESEARCH   |
+	| SCOTT  | 3000 |     20 | RESEARCH   |
+	| JONES  | 2975 |     20 | RESEARCH   |
+	| SMITH  |  800 |     20 | RESEARCH   |
+	| JAMES  |  950 |     30 | SALES      |
+	| TURNER | 1500 |     30 | SALES      |
+	| BLAKE  | 2850 |     30 | SALES      |
+	| MARTIN | 1250 |     30 | SALES      |
+	| WARD   | 1250 |     30 | SALES      |
+	| ALLEN  | 1600 |     30 | SALES      |
+	| NULL   | NULL |     40 | OPERATIONS |
+	+--------+------+--------+------------+
+
+5) Display all ename, sal, deptno from emp, dept table where all employees which has matching department as well as employee does not have any departments. This query should include non matching rows.
+	
+	select ename, sal, dept.deptno, dname from emp left join dept on emp.deptno=dept.deptno;
+
+	+--------+------+--------+------------+
+	| ename  | sal  | deptno | dname      |
+	+--------+------+--------+------------+
+	| SMITH  |  800 |     20 | RESEARCH   |
+	| ALLEN  | 1600 |     30 | SALES      |
+	| WARD   | 1250 |     30 | SALES      |
+	| JONES  | 2975 |     20 | RESEARCH   |
+	| MARTIN | 1250 |     30 | SALES      |
+	| BLAKE  | 2850 |     30 | SALES      |
+	| CLARK  | 2450 |     10 | ACCOUNTING |
+	| SCOTT  | 3000 |     20 | RESEARCH   |
+	| KING   | 5000 |     10 | ACCOUNTING |
+	| TURNER | 1500 |     30 | SALES      |
+	| ADAMS  | 1100 |     20 | RESEARCH   |
+	| JAMES  |  950 |     30 | SALES      |
+	| FORD   | 3000 |     20 | RESEARCH   |
+	| MILLER | 1300 |   NULL | NULL       |
+	+--------+------+--------+------------+
+
+
+
+6) Display all ename, sal, dname. Result must include all employees as well as all departments. This query should include non matching rows on both the tables.
+	
+			select * from emp
+			    -> left join dept on emp.deptno = dept.deptno
+			    -> UNION
+			    -> select * from emp
+			    -> right join dept on emp.deptno = dept.deptno;
+	
+	+--------+------+------------+
+	| ENAME  | SAL  | DNAME      |
+	+--------+------+------------+
+	| KING   | 5000 | ACCOUNTING |
+	| CLARK  | 2450 | ACCOUNTING |
+	| FORD   | 3000 | RESEARCH   |
+	| ADAMS  | 1100 | RESEARCH   |
+	| SCOTT  | 3000 | RESEARCH   |
+	| JONES  | 2975 | RESEARCH   |
+	| SMITH  |  800 | RESEARCH   |
+	| JAMES  |  950 | SALES      |
+	| TURNER | 1500 | SALES      |
+	| BLAKE  | 2850 | SALES      |
+	| MARTIN | 1250 | SALES      |
+	| WARD   | 1250 | SALES      |
+	| ALLEN  | 1600 | SALES      |
+	| NULL   | NULL | OPERATIONS |
+	+--------+------+------------+
+
+
+7) Display all ename, empno, dname from emp, dept table without joining two tables
+	
+		select * from emp,dept;
+	+-------+--------+-----------+------+------------+------+------+--------+--------+------------+----------+
+	| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL  | COMM | DEPTNO | DEPTNO | DNAME      | LOC      |
+	+-------+--------+-----------+------+------------+------+------+--------+--------+------------+----------+
+	|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |     40 | OPERATIONS | BOSTON   |
+	|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |     30 | SALES      | CHICAGO  |
+	|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |     20 | RESEARCH   | DALLAS   |
+	|  7369 | SMITH  | CLERK     | 7902 | 1980-12-17 |  800 | NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+	|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |     30 | SALES      | CHICAGO  |
+	|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7499 | ALLEN  | SALESMAN  | 7698 | 1981-02-20 | 1600 |  300 |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |     30 | SALES      | CHICAGO  |
+	|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7521 | WARD   | SALESMAN  | 7698 | 1981-02-22 | 1250 |  500 |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |     40 | OPERATIONS | BOSTON   |
+	|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |     30 | SALES      | CHICAGO  |
+	|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |     20 | RESEARCH   | DALLAS   |
+	|  7566 | JONES  | MANAGER   | 7839 | 1981-04-02 | 2975 | NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+	|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |     30 | SALES      | CHICAGO  |
+	|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7654 | MARTIN | SALESMAN  | 7698 | 1981-09-28 | 1250 | 1400 |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |     30 | SALES      | CHICAGO  |
+	|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7698 | BLAKE  | MANAGER   | 7839 | 1981-05-01 | 2850 | NULL |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |     40 | OPERATIONS | BOSTON   |
+	|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |     30 | SALES      | CHICAGO  |
+	|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |     20 | RESEARCH   | DALLAS   |
+	|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |     10 | ACCOUNTING | NEW YORK |
+	|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |     40 | OPERATIONS | BOSTON   |
+	|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |     30 | SALES      | CHICAGO  |
+	|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |     20 | RESEARCH   | DALLAS   |
+	|  7788 | SCOTT  | ANALYST   | 7566 | 1982-12-09 | 3000 | NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+	|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |     40 | OPERATIONS | BOSTON   |
+	|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |     30 | SALES      | CHICAGO  |
+	|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |     20 | RESEARCH   | DALLAS   |
+	|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |     10 | ACCOUNTING | NEW YORK |
+	|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |     30 | SALES      | CHICAGO  |
+	|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7844 | TURNER | SALESMAN  | 7698 | 1981-09-08 | 1500 |    0 |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100 | NULL |     20 |     40 | OPERATIONS | BOSTON   |
+	|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100 | NULL |     20 |     30 | SALES      | CHICAGO  |
+	|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100 | NULL |     20 |     20 | RESEARCH   | DALLAS   |
+	|  7876 | ADAMS  | CLERK     | 7788 | 1983-01-12 | 1100 | NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+	|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |     40 | OPERATIONS | BOSTON   |
+	|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |     30 | SALES      | CHICAGO  |
+	|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |     20 | RESEARCH   | DALLAS   |
+	|  7900 | JAMES  | CLERK     | 7698 | 1981-12-03 |  950 | NULL |     30 |     10 | ACCOUNTING | NEW YORK |
+	|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |     40 | OPERATIONS | BOSTON   |
+	|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |     30 | SALES      | CHICAGO  |
+	|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |     20 | RESEARCH   | DALLAS   |
+	|  7902 | FORD   | ANALYST   | 7566 | 1981-12-03 | 3000 | NULL |     20 |     10 | ACCOUNTING | NEW YORK |
+	|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   NULL |     40 | OPERATIONS | BOSTON   |
+	|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   NULL |     30 | SALES      | CHICAGO  |
+	|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   NULL |     20 | RESEARCH   | DALLAS   |
+	|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |   NULL |     10 | ACCOUNTING | NEW YORK |
+	+-------+--------+-----------+------+------------+------+------+--------+--------+------------+----------+
+
+8) Display all the departments where department does not have any employees
+	
+	select dname from dept left join emp on dept.deptno = emp.deptno where ename is null;
+	+------------+
+	| dname      |
+	+------------+
+	| OPERATIONS |
+	+------------+
+
+9) Display all the departments where department does have atleast one employee
+	 
+	select dname from dept left join emp on dept.deptno = emp.deptno where ename is not null;
+	
+	+------------+
+	| dname      |
+	+------------+
+	| RESEARCH   |
+	| SALES      |
+	| SALES      |
+	| RESEARCH   |
+	| SALES      |
+	| SALES      |
+	| ACCOUNTING |
+	| RESEARCH   |
+	| ACCOUNTING |
+	| SALES      |
+	| RESEARCH   |
+	| SALES      |
+	| RESEARCH   |
+	+------------+
+
+10) Display all employees those who are not managers?
+	
+	SELECT E1.* FROM EMP E1 LEFT JOIN EMP E2 ON E1.EMPNO = E2.MGR WHERE E2.MGR IS NULL;
+	
+	+-------+--------+----------+------+------------+------+------+--------+
+	| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+	+-------+--------+----------+------+------------+------+------+--------+
+	|  7369 | SMITH  | CLERK    | 7902 | 1980-12-17 |  800 | NULL |     20 |
+	|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600 |  300 |     30 |
+	|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |     30 |
+	|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250 | 1400 |     30 |
+	|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500 |    0 |     30 |
+	|  7876 | ADAMS  | CLERK    | 7788 | 1983-01-12 | 1100 | NULL |     20 |
+	|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950 | NULL |     30 |
+	|  7934 | MILLER | CLERK    | 7782 | 1982-01-23 | 1300 | NULL |   NULL |
+	+-------+--------+----------+------+------------+------+------+--------+
+
+11) Display all the records for deptno which belongs to employee name JAMES?
+	
+	select * from emp E2 JOIN (select deptno from emp where ename='james') E1 ON E1.DEPTNO=E2.DEPTNO;
+
+	+-------+--------+----------+------+------------+------+------+--------+--------+
+	| EMPNO | ENAME  | JOB      | MGR  | HIREDATE   | SAL  | COMM | DEPTNO | deptno |
+	+-------+--------+----------+------+------------+------+------+--------+--------+
+	|  7499 | ALLEN  | SALESMAN | 7698 | 1981-02-20 | 1600 |  300 |     30 |     30 |
+	|  7521 | WARD   | SALESMAN | 7698 | 1981-02-22 | 1250 |  500 |     30 |     30 |
+	|  7654 | MARTIN | SALESMAN | 7698 | 1981-09-28 | 1250 | 1400 |     30 |     30 |
+	|  7698 | BLAKE  | MANAGER  | 7839 | 1981-05-01 | 2850 | NULL |     30 |     30 |
+	|  7844 | TURNER | SALESMAN | 7698 | 1981-09-08 | 1500 |    0 |     30 |     30 |
+	|  7900 | JAMES  | CLERK    | 7698 | 1981-12-03 |  950 | NULL |     30 |     30 |
+	+-------+--------+----------+------+------------+------+------+--------+--------+
+	
+12) Display all the records in emp table where salary should be less then or equal to ADAMS salary?
+	
+	SELECT E1.* FROM EMP E1 JOIN (SELECT SAL FROM EMP  WHERE ENAME="ADAMS") E2 ON E1.SAL<=E2.SAL;
+	
+	+-------+-------+-------+------+------------+------+------+--------+
+	| EMPNO | ENAME | JOB   | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+	+-------+-------+-------+------+------------+------+------+--------+
+	|  7369 | SMITH | CLERK | 7902 | 1980-12-17 |  800 | NULL |     20 |
+	|  7876 | ADAMS | CLERK | 7788 | 1983-01-12 | 1100 | NULL |     20 |
+	|  7900 | JAMES | CLERK | 7698 | 1981-12-03 |  950 | NULL |     30 |
+	+-------+-------+-------+------+------------+------+------+--------+
+	
+13) Display ename, sal, grade, dname, loc for each employee.
+
+	SELECT ENAME,SAL,GRADE,DNAME,LOC FROM EMP JOIN SALGRADE S ON EMP.SAL BETWEEN S.LOSAL AND S.HISAL JOIN 
+	DEPT ON EMP.DEPTNO = DEPT.DEPTNO;
+	
+	+--------+------+-------+------------+----------+
+	| ename  | sal  | grade | dname      | loc      |
+	+--------+------+-------+------------+----------+
+	| JAMES  |  950 |     1 | SALES      | CHICAGO  |
+	| ADAMS  | 1100 |     1 | RESEARCH   | DALLAS   |
+	| SMITH  |  800 |     1 | RESEARCH   | DALLAS   |
+	| MARTIN | 1250 |     2 | SALES      | CHICAGO  |
+	| WARD   | 1250 |     2 | SALES      | CHICAGO  |
+	| TURNER | 1500 |     3 | SALES      | CHICAGO  |
+	| ALLEN  | 1600 |     3 | SALES      | CHICAGO  |
+	| FORD   | 3000 |     4 | RESEARCH   | DALLAS   |
+	| SCOTT  | 3000 |     4 | RESEARCH   | DALLAS   |
+	| CLARK  | 2450 |     4 | ACCOUNTING | NEW YORK |
+	| BLAKE  | 2850 |     4 | SALES      | CHICAGO  |
+	| JONES  | 2975 |     4 | RESEARCH   | DALLAS   |
+	| KING   | 5000 |     5 | ACCOUNTING | NEW YORK |
+	+--------+------+-------+------------+----------+
+
+14) Display all employee whose location is DALLAS
+
+	mysql> select ename,  loc from emp join dept on emp.deptno=dept.deptno where loc='dallas';
+
+	+-------+--------+
+	| ename | loc    |
+	+-------+--------+
+	| SMITH | DALLAS |
+	| JONES | DALLAS |
+	| SCOTT | DALLAS |
+	| ADAMS | DALLAS |
+	| FORD  | DALLAS |
+	+-------+--------+

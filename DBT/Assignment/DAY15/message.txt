@@ -1,0 +1,105 @@
+
+6. List available database in MongoDB server
+-------------------------------------------------
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+
+7. Switch to each database and observe list of collection in each database
+----------------------------------------------------------------------
+> use admin
+switched to db admin
+> show collections;
+system.version
+> db.system.version.find()
+{ "_id" : "featureCompatibilityVersion", "version" : "5.0" }
+>
+------
+> use config
+switched to db config
+> show collections
+system.sessions
+> db.system.sessions.find()
+{ "_id" : { "id" : UUID("5a0d63c4-4651-47ed-b2b8-7e6ad6a20481"), "uid" : BinData(0,"47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=") }, "lastUse" : ISODate("2021-11-03T14:57:51.090Z") }
+
+------
+
+
+
+
+8. Switch to new database called as scott
+
+
+9. Create a new collection in scott schema with following command
+
+	db.salgrade.insert({GRADE:2, LOSAL:1001, HISAL:2000, TAX:100});
+	
+10. Add few more documents to same collection with following keyvalue pair
+
++-------+-------+-------+
+| GRADE | LOSAL | HISAL |
++-------+-------+-------+
+|     1 |   700 |  1200 |
+|     2 |  1201 |  1400 |
+|     3 |  1401 |  2000 |
+|     4 |  2001 |  3000 |
+|     5 |  3001 |  9999 |
++-------+-------+-------+
+	
+	Note: Use command db.salgrade.insertOne({GRADE:1, LOSAL:700, HISAL:1200})
+	
+------------------------------------
+> db.salgrade.insert({GRADE:1,LOSAL:700,HISAL:1200 });
+WriteResult({ "nInserted" : 1 })
+> db.salgrade.insert({GRADE:2,LOSAL:1201,HISAL:1400 });
+WriteResult({ "nInserted" : 1 })
+> db.salgrade.insert({GRADE:3,LOSAL:1401,HISAL:2000},{GRADE:4,LOSAL:2001,HISAL:3000},{GRADE:5,LOSAL:3001,HISAL:9999});
+WriteResult({ "nInserted" : 1 })
+> db.salgrade.find()
+{ "_id" : ObjectId("6182a500c2b128fb1eefb986"), "GRADE" : 2, "LOSAL" : 1001, "HISAL" : 2000, "TAX" : 100 }
+{ "_id" : ObjectId("6182a560c2b128fb1eefb987"), "GRADE" : 1, "LOSAL" : 700, "HISAL" : 1200 }
+{ "_id" : ObjectId("6182a581c2b128fb1eefb988"), "GRADE" : 2, "LOSAL" : 1201, "HISAL" : 1400 }
+{ "_id" : ObjectId("6182a63ac2b128fb1eefb989"), "GRADE" : 3, "LOSAL" : 1401, "HISAL" : 2000 }
+> db.salgrade.insertOne({GRADE:4,LOSAL:2001,HISAL:3000 });
+{
+        "acknowledged" : true,
+        "insertedId" : ObjectId("6182a66ec2b128fb1eefb98a")
+}
+> db.salgrade.insertOne({GRADE:5,LOSAL:3001,HISAL:9999 });
+{
+        "acknowledged" : true,
+        "insertedId" : ObjectId("6182a688c2b128fb1eefb98b")
+}
+
+
+
+11. List all the records in salgrade table.
+
+   db.salgrade.find();
+> db.salgrade.find()
+{ "_id" : ObjectId("6182a500c2b128fb1eefb986"), "GRADE" : 2, "LOSAL" : 1001, "HISAL" : 2000, "TAX" : 100 }
+{ "_id" : ObjectId("6182a560c2b128fb1eefb987"), "GRADE" : 1, "LOSAL" : 700, "HISAL" : 1200 }
+{ "_id" : ObjectId("6182a581c2b128fb1eefb988"), "GRADE" : 2, "LOSAL" : 1201, "HISAL" : 1400 }
+{ "_id" : ObjectId("6182a63ac2b128fb1eefb989"), "GRADE" : 3, "LOSAL" : 1401, "HISAL" : 2000 }
+{ "_id" : ObjectId("6182a66ec2b128fb1eefb98a"), "GRADE" : 4, "LOSAL" : 2001, "HISAL" : 3000 }
+{ "_id" : ObjectId("6182a688c2b128fb1eefb98b"), "GRADE" : 5, "LOSAL" : 3001, "HISAL" : 9999 }   
+
+
+
+12. find the csv files emp.csv and dept.csv. Load data of these files in MongoDB using following command (fire them from command prompt. Provide the path of csv file in case you are not in same directory)
+
+----
+C:\Program Files\MongoDB\Server\5.0\bin>mongoimport --db scott --collection dept --file C:\Users\HP\Downloads\dept.csv --headerline --type csv --drop
+
+2021-11-03T21:21:46.522+0530    connected to: mongodb://localhost/
+2021-11-03T21:21:46.526+0530    dropping: scott.dept
+2021-11-03T21:21:46.757+0530    4 document(s) imported successfully. 0 document(s) failed to import.
+----
+C:\Program Files\MongoDB\Server\5.0\bin>mongoimport --db scott --collection dept --file C:\Users\HP\Downloads\emp.csv --headerline --type csv --drop
+
+2021-11-03T21:22:34.650+0530    connected to: mongodb://localhost/
+2021-11-03T21:22:34.651+0530    dropping: scott.dept
+2021-11-03T21:22:35.055+0530    14 document(s) imported successfully. 0 document(s) failed to import.
+
+--------------------------------------

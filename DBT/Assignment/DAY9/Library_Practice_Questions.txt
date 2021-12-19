@@ -1,0 +1,131 @@
+1. Retrieve details of all books in the library – id, title, name of publisher, authors, number of copies in each branch,etc.
+-->
+		select b.book_id, b.title, p.name,a.author_name , lb.branch_name, bc.no_of_copies
+		from book b join publisher p using(pub_id) natural join book_authors
+		join author a using(auth_id) join book_copies bc using(book_id) join library_branch lb using(branch_id);
+			
+			+---------+-------+---------------+--------------+--------------+--------------+
+			| book_id | title | name          | author_name  | branch_name  | no_of_copies |
+			+---------+-------+---------------+--------------+--------------+--------------+
+			|       1 | DBMS  | MCGRAW-HILL   | NAVATHE      | RR NAGAR     |           10 |
+			|       1 | DBMS  | MCGRAW-HILL   | NAVATHE      | RNSIT        |            5 |
+			|       2 | ADBMS | MCGRAW-HILL   | NAVATHE      | RAJAJI NAGAR |            2 |
+			|       2 | ADBMS | MCGRAW-HILL   | NAVATHE      | NITTE        |            5 |
+			|       3 | CN    | PEARSON       | TANENBAUM    | MANIPAL      |            7 |
+			|       4 | CG    | GRUPO PLANETA | EDWARD ANGEL | RNSIT        |            3 |
+			|       5 | OS    | PEARSON       | GALVIN       | RR NAGAR     |            1 |
+			+---------+-------+---------------+--------------+--------------+--------------+
+
+2. Get the particulars of borrowers who have borrowed more than 3 books, but from Jan 2017 to Jun 2017
+-->
+	borrowers table is empty;
+
+3. Find name of publishers who are from same place (addresS)
+-->
+	select p.name, p.address from publisher p where p.address in
+    ( select pp.address from publisher pp having count(pp.address)>=2) order by p.address;
+		
+			+---------------+-----------+
+			| name          | address   |
+			+---------------+-----------+
+			| MCGRAW-HILL   | BANGALORE |
+			| GRUPO PLANETA | BANGALORE |
+			+---------------+-----------+
+			
+															OR
+															
+	select a.name , a.address from publisher a, publisher b where a.address = b.address and a.name <> b.name ;
+	
+			+---------------+-----------+
+			| name          | address   |
+			+---------------+-----------+
+			| GRUPO PLANETA | BANGALORE |
+			| MCGRAW-HILL   | BANGALORE |
+			+---------------+-----------+
+		
+4. Find name of authors whose books has been published by same publishers.
+-->
+	select AUTHOR_NAME,p.name from book natural join BOOK_AUTHORS 
+	natural join AUTHOR natural join publisher p where 
+	pub_id in(select b.pub_id from book b group by pub_id having count(b.pub_id)>=2);
+		
+			+-------------+-------------+
+			| AUTHOR_NAME | name        |
+			+-------------+-------------+
+			| NAVATHE     | MCGRAW-HILL |
+			| NAVATHE     | MCGRAW-HILL |
+			| TANENBAUM   | PEARSON     |
+			| GALVIN      | PEARSON     |
+			+-------------+-------------+
+
+5. Find the year in which maximum number of books has been published
+-->
+	select d.pub_year 
+	from 
+	(select pub_year ,substr(pub_year,5,4) as year, 
+	count(substr(pub_year,5,4)) count 
+	from 
+	book group by year order by count desc limit 1 ) d;
+
+			+----------+
+			| pub_year |
+			+----------+
+			| JUN-2016 |
+			+----------+
+			
+	
+6. Find cities with maximum number of library
+-->
+	select address 	CITY ,count(address) "BRANCHES" 
+	from library_branch group by address limit 1;
+	
+			+-----------+----------+
+			| CITY      | BRANCHES |
+			+-----------+----------+
+			| BANGALORE |	  3    |
+			+-----------+----------+
+											or
+											
+	mysql> select address as city , count(address) as count from library_branch group by address 
+	having address = (select address from (select address,count(address) as count_a from library_branch group by address) 
+	as a HAVING MAX(count_a));
+			+-----------+-------+
+			| city      | count |
+			+-----------+-------+
+			| BANGALORE |     3 |
+			+-----------+-------+
+	
+7. Find the name of book and branch name where there maximum copies are maintained
+-->
+	SELECT TITLE, BRANCH_NAME FROM BOOK NATURAL JOIN LIBRARY_BRANCH 
+	NATURAL JOIN BOOK_COPIES WHERE NO_OF_COPIES=(SELECT MAX(NO_OF_COPIES) FROM BOOK_COPIES);
+
+			+------+-------------+
+			|TITLE | BRANCH_NAME |
+			+------+-------------+
+			|DBMS  |   RR NAGAR  |
+			+------+-------------+
+
+8. Find the authors and there books which has been lended till now.
+-->
+	book_lending table is empty;
+
+9. Display the library name, author name, book name, publisher name, book quantity under all libraries
+-->
+	SELECT BRANCH_NAME, AUTHOR_NAME , TITLE , NO_OF_COPIES, NAME FROM BOOK JOIN PUBLISHER USING(PUB_ID) 
+	JOIN BOOK_AUTHORS USING(BOOK_ID) JOIN AUTHOR USING(AUTH_ID) JOIN book_copies USING(BOOK_ID) 
+	JOIN LIBRARY_BRANCH USING(BRANCH_ID) GROUP BY TITLE;
+
+			+--------------+--------------+-------+--------------+---------------+
+			| BRANCH_NAME  | AUTHOR_NAME  | TITLE | NO_OF_COPIES | NAME          |
+			+--------------+--------------+-------+--------------+---------------+
+			| RR NAGAR     | NAVATHE      | DBMS  |           10 | MCGRAW-HILL   |
+			| RAJAJI NAGAR | NAVATHE      | ADBMS |            2 | MCGRAW-HILL   |
+			| MANIPAL      | TANENBAUM    | CN    |            7 | PEARSON       |
+			| RNSIT        | EDWARD ANGEL | CG    |            3 | GRUPO PLANETA |
+			| RR NAGAR     | GALVIN       | OS    |            1 | PEARSON       |
+			+--------------+--------------+-------+--------------+---------------+
+			
+10. Find out the library card for which no book has been issued.
+-->
+	book_lending table is empty;

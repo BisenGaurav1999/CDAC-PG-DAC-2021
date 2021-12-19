@@ -1,0 +1,229 @@
+Cursors
+---------
+
+1. Prepare a program to display the comma separated list of employee names in following format
+
+   Deptno    Employees
+   -------   ------------
+   10        Scott, Smith, Jones
+   20        Allen, Ford
+   30 
+
+--->
+		delimiter $$
+		drop procedure if exists emp_list1 $$
+		create procedure emp_list1()
+		block1: begin
+			DECLARE is_not_foundout BOOLEAN default false;
+            declare deptout int;
+            declare cout cursor for select distinct deptno from emp;
+            declare continue handler for not found set is_not_foundout=true;
+            Drop TABLE IF EXISTS temp_emp;
+			CREATE TABLE temp_emp ( dno INT , str VARCHAR(200)) ;
+            open cout;
+            outloop: LOOP
+            
+				fetch cout into deptout;
+                
+                if is_not_foundout then
+                leave outloop;
+                end if;
+            block2: begin
+            
+			DECLARE v_emp_list,v_ename VARCHAR(2000);
+			DECLARE is_not_foundin BOOLEAN default false;
+			DECLARE c1 CURSOR FOR select ename FROM emp WHERE deptno=deptout;
+			DECLARE continue handler for not found set is_not_foundin=true;
+			OPEN c1;
+			
+			curloop: LOOP
+			   FETCH c1 INTO v_ename;
+			   IF is_not_foundin THEN
+				  LEAVE curloop;
+			   END IF;
+			   IF v_emp_list IS NULL THEN
+				   SET v_emp_list = v_ename;
+			   ELSE
+				   SET v_emp_list = CONCAT(v_emp_list,', ' ,v_ename);
+			   END IF;
+			END LOOP curloop;
+            insert into temp_emp values (deptout, v_emp_list);
+			CLOSE c1;
+            end block2;
+            end loop outloop;
+            close cout;
+            select * from temp_emp order by dno;
+			end block1$$
+
+
+			use dac;
+			call emp_list1();
+			
+			10	CLARK, KING, MILLER
+			20	SMITH, JONES, SCOTT, ADAMS, FORD
+			30	ALLEN, WARD, MARTIN, BLAKE, TURNER, JAMES
+
+2. Prepare a program to show the details in following format
+
+    Deptno   Dname      Employees
+	-------  -------    -------------
+	10        SALES     Scott, Smith, Jones
+	
+---->
+		delimiter $$
+		drop procedure if exists emp_list1 $$
+		create procedure emp_list1()
+		block1: begin
+			DECLARE is_not_foundout BOOLEAN default false;
+            declare deptout int;
+            declare cout cursor for select distinct deptno from emp;
+            declare continue handler for not found set is_not_foundout=true;
+            Drop TABLE IF EXISTS temp_emp;
+			CREATE TABLE temp_emp ( dno INT , str VARCHAR(200)) ;
+            open cout;
+            outloop: LOOP
+            
+				fetch cout into deptout;
+                
+                if is_not_foundout then
+                leave outloop;
+                end if;
+            block2: begin
+            
+			DECLARE v_emp_list,v_ename VARCHAR(2000);
+			DECLARE is_not_foundin BOOLEAN default false;
+			DECLARE c1 CURSOR FOR select ename FROM emp WHERE deptno=deptout;
+			DECLARE continue handler for not found set is_not_foundin=true;
+			OPEN c1;
+			
+			curloop: LOOP
+			   FETCH c1 INTO v_ename;
+			   IF is_not_foundin THEN
+				  LEAVE curloop;
+			   END IF;
+			   IF v_emp_list IS NULL THEN
+				   SET v_emp_list = v_ename;
+			   ELSE
+				   SET v_emp_list = CONCAT(v_emp_list,', ' ,v_ename);
+			   END IF;
+			END LOOP curloop;
+            insert into temp_emp values (deptout, v_emp_list);
+			CLOSE c1;
+            end block2;
+            end loop outloop;
+            close cout;
+            select * from temp_emp order by dno;
+		end block1$$
+
+		use dac;
+		call emp_list1();
+
+3. For performance testing we are trying to increase number of records by 10 times for each department. For eg: If there are 3 employees in dept 10 then we should be able to increase the employee count to 30 using same / random values 
+
+eg:
+
+		+-------+--------+-----------+------+------------+------+------+--------+
+		| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+		+-------+--------+-----------+------+------------+------+------+--------+
+		|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |     10 |
+
+
+		should become
+
+
+		+-------+--------+-----------+------+------------+------+------+--------+
+		| EMPNO | ENAME  | JOB       | MGR  | HIREDATE   | SAL  | COMM | DEPTNO |
+		+-------+--------+-----------+------+------------+------+------+--------+
+		|  7782 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7783 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7784 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7785 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7786 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		|  7787 | CLARK  | MANAGER   | 7839 | 1981-06-09 | 2450 | NULL |     10 |
+		...........
+		|  7839 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7840 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7841 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7842 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7843 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		|  7844 | KING   | PRESIDENT | NULL | 1981-11-17 | 5000 | NULL |     10 |
+		...........
+		|  7934 | MILLER | CLERK     | 7782 | 1982-01-23 | 1300 | NULL |     10 |
+		
+--------->
+
+		Delimiter //
+		 drop table if exists emp_copy//
+		create table emp_copy like emp//
+		 drop procedure if exists proc_cur//
+		CREATE PROCEDURE proc_cur()
+		BEGIN
+			  DECLARE v_is_not_found BOOLEAN;
+			  DECLARE v_empno INT;
+			  DECLARE v_deptno int;
+			  DECLARE v_ename VARCHAR(200);
+			  DECLARE V_JOB varchar(10);
+			  DECLARE V_MGR INT;
+			  DECLARE V_HIREDATE DATE;
+			  DECLARE V_SAL FLOAT;
+			  DECLARE V_COMM FLOAT;
+			   Declare i int;
+			  DECLARE c1 CURSOR For select  *  from emp; 
+			  DECLARE CONTINUE HANDLER FOR not found  SET v_is_not_found = TRUE;
+
+			  OPEN c1;
+			  outer_loop: LOOP
+					 FETCH c1 INTO v_empno,v_ename,v_job,v_mgr,v_hiredate, v_sal,v_comm,v_deptno; 
+					 IF v_is_not_found THEN
+						LEAVE outer_loop;
+					 END IF;
+					 SET i=0;
+					 inner_loop: LOOP
+						 SET i=i+1;
+						-- SELECT i;
+						 IF i=11 then
+							 LEAVE inner_loop;
+						 END IF;
+						  insert into emp_copy values (v_empno+i,v_ename,v_job,v_mgr,v_hiredate, v_sal,v_comm,v_deptno);
+					 END LOOP inner_loop;
+			   END LOOP outer_loop;
+			 CLOSE c1; -- Release the result set from memory of server
+			 drop table if exists emp;
+			 create table emp as select * from emp_copy;
+		END//
+		select * from emp;
+		call proc_cur();
+		use dac;
+	
+4. Prepare a program to create clone of all tables in given schema
+
+---->
+			delimiter &
+			drop procedure if exists table_copy &
+			create procedure table_copy()
+			begin
+			declare if_not_exists boolean default false;
+			declare tablename varchar(20);
+			declare c1 cursor for select table_name from information_schema.tables where table_schema=(select database());
+			declare continue handler for not found set if_not_exists=true;
+			open c1;
+			curloop: loop
+				fetch c1 into tablename;
+				if if_not_exists then
+				leave curloop;
+				end if ;
+			set @statement=concat('create table ',tablename,'_copy as select * from ',tablename);
+			prepare stmnt from @statement;
+			execute stmnt;
+			deallocate prepare stmnt;
+			end loop curloop;
+			close c1;
+			show tables;
+			end &
+
+			call table_copy();
+
+
+

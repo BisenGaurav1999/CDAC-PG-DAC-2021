@@ -1,0 +1,609 @@
+1.) Write a query in SQL to display the first name, last name, department number, and department name for each employee.
+--> 
+	select e.first_name,e.last_name,e.department_id, d.department_name from employees e join departments d 
+	on e.department_id=d.department_id group by e.employee_id;
+
+2.) Write a query in SQL to display the first and last name, department, city, and state province for each employee
+-->
+	 select e.first_name,e.last_name,e.department_id, d.department_name, l.city, l.state_province from employees e join 
+	 departments d on e.department_id=d.department_id join locations l on d.location_id=l.location_id;
+
+3.) Write a query in SQL to display the first name, last name, salary, and job grade for all employees.
+-->
+	select e.first_name, e.last_name, e.salary, j.job_title from employees e join jobs j on e.job_id=j.job_id;
+									
+														OR
+														
+	select e.first_name, e.last_name, e.salary, j.job_title from employees e join jobs j on e.job_id=j.job_id where e.salary 
+	between j.min_salary and j.max_salary;
+
+4.) Write a query in SQL to display the first name, last name, department number and department name, for all employees for 
+	departments 8 or 4.
+-->
+	select e.first_name,e.last_name,e.department_id, d.department_name from employees e natural join departments d where 
+	d.department_id between 4 and 8;
+		
+			+------------+-------------+---------------+------------------+
+			| first_name | last_name   | department_id | department_name  |
+			+------------+-------------+---------------+------------------+
+			| Susan      | Mavris      |             4 | Human Resources  |
+			| Matthew    | Weiss       |             5 | Shipping         |
+			| Adam       | Fripp       |             5 | Shipping         |
+			| Payam      | Kaufling    |             5 | Shipping         |
+			| Shanta     | Vollman     |             5 | Shipping         |
+			| Irene      | Mikkilineni |             5 | Shipping         |
+			| Sarah      | Bell        |             5 | Shipping         |
+			| Britney    | Everett     |             5 | Shipping         |
+			| Alexander  | Hunold      |             6 | IT               |
+			| Bruce      | Ernst       |             6 | IT               |
+			| David      | Austin      |             6 | IT               |
+			| Valli      | Pataballa   |             6 | IT               |
+			| Diana      | Lorentz     |             6 | IT               |
+			| Hermann    | Baer        |             7 | Public Relations |
+			| John       | Russell     |             8 | Sales            |
+			| Karen      | Partners    |             8 | Sales            |
+			| Jonathon   | Taylor      |             8 | Sales            |
+			| Jack       | Livingston  |             8 | Sales            |
+			| Kimberely  | Grant       |             8 | Sales            |
+			| Charles    | Johnson     |             8 | Sales            |
+			+------------+-------------+---------------+------------------+
+	
+5.) Write a query in SQL to display those employees who contain a letter z to their first name and also display their last name, 
+	department, city, and state province.
+-->
+	select e.first_name,e.last_name, d.department_name, l.city, l.state_province from employees e join departments d 
+	on e.department_id=d.department_id join locations l on d.location_id=l.location_id where e.first_name like '%z%';
+	Empty set (0.02 s
+
+6.) Write a query in SQL to display all departments including those where does not have any employee. 
+--> 
+		SELECT DISTINCT(D.DEPARTMENT_NAME) FROM DEPARTMENTS D LEFT JOIN EMPLOYEES E ON D.DEPARTMENT_ID=E.DEPARTMENT_ID;
+			
+			+------------------+
+			| DEPARTMENT_NAME  |
+			+------------------+
+			| Administration   |
+			| Marketing        |
+			| Purchasing       |
+			| Human Resources  |
+			| Shipping         |
+			| IT               |
+			| Public Relations |
+			| Sales            |
+			| Executive        |
+			| Finance          |
+			| Accounting       |
+			| OPERATIONS       |
+			+------------------+
+
+																	OR DIFFERENT QUESTION
+
+		SELECT D.DEPARTMENT_NAME FROM DEPARTMENTS D LEFT JOIN EMPLOYEES E ON D.DEPARTMENT_ID=E.DEPARTMENT_ID WHERE E.DEPARTMENT_ID IS NULL;
+		
+			+-----------------+
+			| DEPARTMENT_NAME |
+			+-----------------+
+			| OPERATIONS      |
+			+-----------------+
+
+7.) Write a query in SQL to display the first and last name and salary for those employees who earn less than the employee earn 
+	whose number is 182.
+-->		
+		select e.first_name,e.last_name,e.salary from employees e join employees s on e.salary < s.salary where s.employee_id=118;
+		
+			+------------+------------+---------+
+			| first_name | last_name  | salary  |
+			+------------+------------+---------+
+			| Karen      | Colmenares | 2500.00 |
+			+------------+------------+---------+
+			1 row in set (0.00 sec)
+
+		mysql> select e.first_name,e.last_name,e.salary from employees e join employees s on e.salary < s.salary where s.employee_id=182;
+
+					Empty set (0.00 sec)
+
+8.) Write a query in SQL to display the first name of all employees including the first name of their manager. 
+-->
+	select e.first_name emp, m.first_name manager
+    -> from employees e join employees m on e.manager_id = m.employee_id;
+	
+			+-------------+-----------+
+			| emp         | manager   |
+			+-------------+-----------+
+			| Neena       | Steven    |
+			| Lex         | Steven    |
+			| Alexander   | Lex       |
+			| Bruce       | Alexander |
+			| David       | Alexander |
+			| Valli       | Alexander |
+			| Diana       | Alexander |
+			| Nancy       | Neena     |
+			| Daniel      | Nancy     |
+			| John        | Nancy     |
+			| Ismael      | Nancy     |
+			| Jose Manuel | Nancy     |
+			| Luis        | Nancy     |
+			| Den         | Steven    |
+			| Alexander   | Den       |
+			| Shelli      | Den       |
+			| Sigal       | Den       |
+			| Guy         | Den       |
+			| Karen       | Den       |
+			| Matthew     | Steven    |
+			| Adam        | Steven    |
+			| Payam       | Steven    |
+			| Shanta      | Steven    |
+			| Irene       | Matthew   |
+			| John        | Steven    |
+			| Karen       | Steven    |
+			| Jonathon    | Steven    |
+			| Jack        | Steven    |
+			| Kimberely   | Steven    |
+			| Charles     | Steven    |
+			| Sarah       | Shanta    |
+			| Britney     | Shanta    |
+			| Jennifer    | Neena     |
+			| Michael     | Steven    |
+			| Pat         | Michael   |
+			| Susan       | Neena     |
+			| Hermann     | Neena     |
+			| Shelley     | Neena     |
+			| William     | Shelley   |
+			+-------------+-----------+
+
+9.) Write a query in SQL to display the department name, city, and state province for each department. 
+-->
+	select d.department_name, l.city,l.location_id from departments d join locations l on d.location_id=l.location_id;
+	
+			+------------------+---------------------+-------------+
+			| department_name  | city                | location_id |
+			+------------------+---------------------+-------------+
+			| IT               | Southlake           |        1400 |
+			| OPERATIONS       | Southlake           |        1400 |
+			| Shipping         | South San Francisco |        1500 |
+			| Administration   | Seattle             |        1700 |
+			| Purchasing       | Seattle             |        1700 |
+			| Executive        | Seattle             |        1700 |
+			| Finance          | Seattle             |        1700 |
+			| Accounting       | Seattle             |        1700 |
+			| Marketing        | Toronto             |        1800 |
+			| Human Resources  | London              |        2400 |
+			| Sales            | Oxford              |        2500 |
+			| Public Relations | Munich              |        2700 |
+			+------------------+---------------------+-------------+
+	
+10.) Write a query in SQL to display the first name, last name, department number and name, for all employees who have or have not 
+	any department. 
+-->
+	select e.first_name,e.last_name,e.department_id, d.department_name from employees e left join departments d on 
+	e.department_id=d.department_id;
+
+																	OR						
+																																										
+	select e.first_name,e.last_name,e.department_id, d.department_name from employees e left join departments d on e.department_id=d.department_id 
+	where e.department_id is null;
+
+			+------------+-----------+---------------+-----------------+
+			| first_name | last_name | department_id | department_name |
+			+------------+-----------+---------------+-----------------+
+			| William    | Gietz     |          NULL | NULL            |
+			+------------+-----------+---------------+-----------------+
+
+11.) Write a query in SQL to display the first name of all employees and the first name of their manager including those who does 
+	not working under any manager.
+-->
+	 select e.first_name Employee, m.first_name from employees e left join employees m on e.manager_id=m.employee_id;
+			
+			+-------------+------------+
+			| Employee    | first_name |
+			+-------------+------------+
+			| Steven      | NULL       |
+			| Neena       | Steven     |
+			| Lex         | Steven     |
+			| Alexander   | Lex        |
+			| Bruce       | Alexander  |
+			| David       | Alexander  |
+			| Valli       | Alexander  |
+			| Diana       | Alexander  |
+			| Nancy       | Neena      |
+			| Daniel      | Nancy      |
+			| John        | Nancy      |
+			| Ismael      | Nancy      |
+			| Jose Manuel | Nancy      |
+			| Luis        | Nancy      |
+			| Den         | Steven     |
+			| Alexander   | Den        |
+			| Shelli      | Den        |
+			| Sigal       | Den        |
+			| Guy         | Den        |
+			| Karen       | Den        |
+			| Matthew     | Steven     |
+			| Adam        | Steven     |
+			| Payam       | Steven     |
+			| Shanta      | Steven     |
+			| Irene       | Matthew    |
+			| John        | Steven     |
+			| Karen       | Steven     |
+			| Jonathon    | Steven     |
+			| Jack        | Steven     |
+			| Kimberely   | Steven     |
+			| Charles     | Steven     |
+			| Sarah       | Shanta     |
+			| Britney     | Shanta     |
+			| Jennifer    | Neena      |
+			| Michael     | Steven     |
+			| Pat         | Michael    |
+			| Susan       | Neena      |
+			| Hermann     | Neena      |
+			| Shelley     | Neena      |
+			| William     | Shelley    |
+			+-------------+------------+
+
+12.) Write a query in SQL to display the first name, last name, and department number for those employees who works in the same 
+	department as the employee who holds the last name as Taylor.
+-->
+	select e.first_name, e.last_name, e.department_id from employees E JOIN EMPLOYEES M ON E.DEPARTMENT_ID=M.DEPARTMENT_ID WHERE M.LAST_NAME='TAYLOR';
+
+			+------------+------------+---------------+
+			| first_name | last_name  | department_id |
+			+------------+------------+---------------+
+			| John       | Russell    |             8 |
+			| Karen      | Partners   |             8 |
+			| Jonathon   | Taylor     |             8 |
+			| Jack       | Livingston |             8 |
+			| Kimberely  | Grant      |             8 |
+			| Charles    | Johnson    |             8 |
+			+------------+------------+---------------+
+
+13.) Write a query in SQL to display the job title, department name, full name (first and last name ) of employee, and starting 
+	date for all the jobs which started on or after 1st January, 1993 and ending with on or before 31 August, 1997.
+-->
+	SELECT CONCAT(E.FIRST_NAME,'  ' ,E.LAST_NAME) NAME, D.DEPARTMENT_NAME, J.JOB_TITLE, E.HIRE_DATE FROM EMPLOYEES E JOIN DEPARTMENTS D 
+	ON E.DEPARTMENT_ID=D.DEPARTMENT_ID JOIN JOBS J ON E.JOB_ID=J.JOB_ID WHERE E.HIRE_DATE BETWEEN '1993-01-01' AND '1997-08-31';
+		
+			+--------------------+------------------+---------------------------------+------------+
+			| NAME               | DEPARTMENT_NAME  | JOB_TITLE                       | HIRE_DATE  |
+			+--------------------+------------------+---------------------------------+------------+
+			| Lex  De Haan       | Executive        | Administration Vice President   | 1993-01-13 |
+			| David  Austin      | IT               | Programmer                      | 1997-06-25 |
+			| Nancy  Greenberg   | Finance          | Finance Manager                 | 1994-08-17 |
+			| Daniel  Faviet     | Finance          | Accountant                      | 1994-08-16 |
+			| Den  Raphaely      | Purchasing       | Purchasing Manager              | 1994-12-07 |
+			| Alexander  Khoo    | Purchasing       | Purchasing Clerk                | 1995-05-18 |
+			| Sigal  Tobias      | Purchasing       | Purchasing Clerk                | 1997-07-24 |
+			| Matthew  Weiss     | Shipping         | Stock Manager                   | 1996-07-18 |
+			| Adam  Fripp        | Shipping         | Stock Manager                   | 1997-04-10 |
+			| Payam  Kaufling    | Shipping         | Stock Manager                   | 1995-05-01 |
+			| John  Russell      | Sales            | Sales Manager                   | 1996-10-01 |
+			| Karen  Partners    | Sales            | Sales Manager                   | 1997-01-05 |
+			| Sarah  Bell        | Shipping         | Shipping Clerk                  | 1996-02-04 |
+			| Britney  Everett   | Shipping         | Shipping Clerk                  | 1997-03-03 |
+			| Michael  Hartstein | Marketing        | Marketing Manager               | 1996-02-17 |
+			| Pat  Fay           | Marketing        | Marketing Representative        | 1997-08-17 |
+			| Susan  Mavris      | Human Resources  | Human Resources Representative  | 1994-06-07 |
+			| Hermann  Baer      | Public Relations | Public Relations Representative | 1994-06-07 |
+			| Shelley  Higgins   | Accounting       | Accounting Manager              | 1994-06-07 |
+			+--------------------+------------------+---------------------------------+------------+
+
+14.) Write a query in SQL to display job title, full name (first and last name ) of employee, and the difference between maximum 
+	salary for the job and salary of the employee.
+-->
+	SELECT CONCAT(E.FIRST_NAME, '  ' ,E.LAST_NAME)NAME, J.JOB_TITLE , J.MAX_SALARY-E.SALARY SALARY_DIFF FROM EMPLOYEES E JOIN JOBS J ON E.JOB_ID=J.JOB_ID ORDER BY SALARY_DIFF ASC;
+			
+			+--------------------+---------------------------------+-------------+
+			| NAME               | JOB_TITLE                       | SALARY_DIFF |
+			+--------------------+---------------------------------+-------------+
+			| Daniel  Faviet     | Accountant                      |        0.00 |
+			| Adam  Fripp        | Stock Manager                   |      300.00 |
+			| Hermann  Baer      | Public Relations Representative |      500.00 |
+			| Matthew  Weiss     | Stock Manager                   |      500.00 |
+			| Payam  Kaufling    | Stock Manager                   |      600.00 |
+			| William  Gietz     | Public Accountant               |      700.00 |
+			| John  Chen         | Accountant                      |      800.00 |
+			| Alexander  Hunold  | Programmer                      |     1000.00 |
+			| Jose Manuel  Urman | Accountant                      |     1200.00 |
+			| Ismael  Sciarra    | Accountant                      |     1300.00 |
+			| Sarah  Bell        | Shipping Clerk                  |     1500.00 |
+			| Jennifer  Whalen   | Administration Assistant        |     1600.00 |
+			| Britney  Everett   | Shipping Clerk                  |     1600.00 |
+			| Shanta  Vollman    | Stock Manager                   |     2000.00 |
+			| Michael  Hartstein | Marketing Manager               |     2000.00 |
+			| Luis  Popp         | Accountant                      |     2100.00 |
+			| Irene  Mikkilineni | Stock Clerk                     |     2300.00 |
+			| Alexander  Khoo    | Purchasing Clerk                |     2400.00 |
+			| Susan  Mavris      | Human Resources Representative  |     2500.00 |
+			| Shelli  Baida      | Purchasing Clerk                |     2600.00 |
+			| Sigal  Tobias      | Purchasing Clerk                |     2700.00 |
+			| Guy  Himuro        | Purchasing Clerk                |     2900.00 |
+			| Karen  Colmenares  | Purchasing Clerk                |     3000.00 |
+			| Pat  Fay           | Marketing Representative        |     3000.00 |
+			| Jonathon  Taylor   | Sales Representative            |     3400.00 |
+			| Jack  Livingston   | Sales Representative            |     3600.00 |
+			| Den  Raphaely      | Purchasing Manager              |     4000.00 |
+			| Bruce  Ernst       | Programmer                      |     4000.00 |
+			| Nancy  Greenberg   | Finance Manager                 |     4000.00 |
+			| Shelley  Higgins   | Accounting Manager              |     4000.00 |
+			| Kimberely  Grant   | Sales Representative            |     5000.00 |
+			| Valli  Pataballa   | Programmer                      |     5200.00 |
+			| David  Austin      | Programmer                      |     5200.00 |
+			| Charles  Johnson   | Sales Representative            |     5800.00 |
+			| Diana  Lorentz     | Programmer                      |     5800.00 |
+			| John  Russell      | Sales Manager                   |     6000.00 |
+			| Karen  Partners    | Sales Manager                   |     6500.00 |
+			| Neena  Kochhar     | Administration Vice President   |    13000.00 |
+			| Lex  De Haan       | Administration Vice President   |    13000.00 |
+			| Steven  King       | President                       |    16000.00 |
+			+--------------------+---------------------------------+-------------+
+
+15.) Write a query in SQL to display the name of the department, average salary and number of employees working in that department 
+	 who got commission.
+-->
+	 select d.department_name, Round(avg(salary),2) AVG_SAL, count(e.department_id) 'No of Employees' from employees e join departments d on e.department_id=d.department_id group by e.department_id;
+			
+			+------------------+----------+-----------------+
+			| department_name  | AVG_SAL  | No of Employees |
+			+------------------+----------+-----------------+
+			| Executive        | 19333.33 |               3 |
+			| IT               |  5760.00 |               5 |
+			| Finance          |  8600.00 |               6 |
+			| Purchasing       |  4150.00 |               6 |
+			| Shipping         |  5885.71 |               7 |
+			| Sales            |  9616.67 |               6 |
+			| Administration   |  4400.00 |               1 |
+			| Marketing        |  9500.00 |               2 |
+			| Human Resources  |  6500.00 |               1 |
+			| Public Relations | 10000.00 |               1 |
+			| Accounting       | 12000.00 |               1 |
+			+------------------+----------+-----------------+
+
+16.) Write a query in SQL to display the full name (first and last name ) of employees, job title and the salary differences to 
+	 their own job for those employees who is working in the department ID 8. 
+-->
+	SELECT CONCAT(E.FIRST_NAME, '  ' ,E.LAST_NAME)NAME, ABS(E.SALARY-M.SALARY) SALARY_DIFF,J.JOB_TITLE FROM 
+	EMPLOYEES E JOIN JOBS J ON E.JOB_ID=J.JOB_ID JOIN EMPLOYEES M WHERE M.DEPARTMENT_ID=8;
+		
+17.) Write a query in SQL to display the name of the country, city, and the departments which are running there.
+-->	
+	select l.state_province country, l.city city , d.department_name from locations l join departments d 
+	on d.location_id=l.location_id;
+		
+		+------------+---------------------+------------------+
+		| country    | city                | department_name  |
+		+------------+---------------------+------------------+
+		| Texas      | Southlake           | IT               |
+		| Texas      | Southlake           | OPERATIONS       |
+		| California | South San Francisco | Shipping         |
+		| Washington | Seattle             | Administration   |
+		| Washington | Seattle             | Purchasing       |
+		| Washington | Seattle             | Executive        |
+		| Washington | Seattle             | Finance          |
+		| Washington | Seattle             | Accounting       |
+		| Ontario    | Toronto             | Marketing        |
+		| NULL       | London              | Human Resources  |
+		| Oxford     | Oxford              | Sales            |
+		| Bavaria    | Munich              | Public Relations |
+		+------------+---------------------+------------------+
+
+18.) Write a query in SQL to display department name and the full name (first and last name) of the manager
+-->
+	select concat(e.first_name,' ' ,e.last_name) name from employees e join employees m on e.employee_id=m.manager_id 
+	group by m.manager_id; 
+
+		+-------------------+
+		| name              |
+		+-------------------+
+		| Steven King       |
+		| Neena Kochhar     |
+		| Lex De Haan       |
+		| Alexander Hunold  |
+		| Nancy Greenberg   |
+		| Den Raphaely      |
+		| Matthew Weiss     |
+		| Shanta Vollman    |
+		| Michael Hartstein |
+		| Shelley Higgins   |
+		+-------------------+
+19.) Write a query in SQL to display job title and average salary of employees.
+-->
+	select j.job_title, avg(e.salary) from employees e join jobs j on e.job_id=j.job_id group by j.job_id;
+	
+			+---------------------------------+---------------+
+			| job_title                       | avg(e.salary) |
+			+---------------------------------+---------------+
+			| Public Accountant               |   8300.000000 |
+			| Accounting Manager              |  12000.000000 |
+			| Administration Assistant        |   4400.000000 |
+			| President                       |  24000.000000 |
+			| Administration Vice President   |  17000.000000 |
+			| Accountant                      |   7920.000000 |
+			| Finance Manager                 |  12000.000000 |
+			| Human Resources Representative  |   6500.000000 |
+			| Programmer                      |   5760.000000 |
+			| Marketing Manager               |  13000.000000 |
+			| Marketing Representative        |   6000.000000 |
+			| Public Relations Representative |  10000.000000 |
+			| Purchasing Clerk                |   2780.000000 |
+			| Purchasing Manager              |  11000.000000 |
+			| Sales Manager                   |  13750.000000 |
+			| Sales Representative            |   7550.000000 |
+			| Shipping Clerk                  |   3950.000000 |
+			| Stock Clerk                     |   2700.000000 |
+			| Stock Manager                   |   7650.000000 |
+			+---------------------------------+---------------+
+
+20.) Write a query in SQL to display the details of jobs which was done by any of the employees who is presently earning a salary on 
+	and above 12000.
+-->
+	select j.job_id, j.job_title, j.min_salary, j.max_salary,concat(e.first_name,' ' ,e.last_name) name from jobs j join employees e 
+	using (job_id) where e.salary>=12000 group by j.job_id;
+	
+		+--------+-------------------------------+------------+------------+-------------------+
+		| job_id | job_title                     | min_salary | max_salary | name              |
+		+--------+-------------------------------+------------+------------+-------------------+
+		|      4 | President                     |   20000.00 |   40000.00 | Steven King       |
+		|      5 | Administration Vice President |   15000.00 |   30000.00 | Neena Kochhar     |
+		|      7 | Finance Manager               |    8200.00 |   16000.00 | Nancy Greenberg   |
+		|     15 | Sales Manager                 |   10000.00 |   20000.00 | John Russell      |
+		|     10 | Marketing Manager             |    9000.00 |   15000.00 | Michael Hartstein |
+		|      2 | Accounting Manager            |    8200.00 |   16000.00 | Shelley Higgins   |
+		+--------+-------------------------------+------------+------------+-------------------+
+
+21.) Write a query in SQL to display the country name, city, and number of those departments where at leaste 2 employees are working.
+-->
+		select country_name, city,department_id from countries NATURAL JOIN locations  NATURAL JOIN
+		departments NATURAL JOIN (select count(employee_id), department_id from employees group by department_id 
+		having count(employee_id) >=2) a ;
+		+--------------------------+---------------------+---------------+
+		| country_name             | city                | department_id |
+		+--------------------------+---------------------+---------------+
+		| United States of America | Southlake           |             6 |
+		| United States of America | South San Francisco |             5 |
+		| United States of America | Seattle             |             3 |
+		| United States of America | Seattle             |             9 |
+		| United States of America | Seattle             |            10 |
+		| Canada                   | Toronto             |             2 |
+		| United Kingdom           | Oxford              |             8 |
+		+--------------------------+---------------------+---------------+
+
+											or
+											
+	select l.state_province, l.city ,d.department_name from locations l join departments d on l.location_id=d.location_id join 
+	employees e using(department_id) group by d.department_id having count(e.department_id)>=2;
+
+		+----------------+---------------------+-----------------+
+		| state_province | city                | department_name |
+		+----------------+---------------------+-----------------+
+		| Texas          | Southlake           | IT              |
+		| California     | South San Francisco | Shipping        |
+		| Washington     | Seattle             | Purchasing      |
+		| Washington     | Seattle             | Executive       |
+		| Washington     | Seattle             | Finance         |
+		| Ontario        | Toronto             | Marketing       |
+		| Oxford         | Oxford              | Sales           |
+		+----------------+---------------------+-----------------+
+
+22.) Write a query in SQL to display the department name, full name (first and last name) of manager, and their city.
+-->
+					
+
+		select concat(m.first_name,' ', m.last_name) Name, d.department_name, l.city  
+		from employees e join employees m on e.manager_id=m.employee_id 
+		join departments d on m.department_id=d.department_id 
+		join locations l on d.location_id=l.location_id group by m.department_id;
+			
+		+-------------------+-----------------+---------------------+
+		| Name              | department_name | city                |
+		+-------------------+-----------------+---------------------+
+		| Steven King       | Executive       | Seattle             |
+		| Alexander Hunold  | IT              | Southlake           |
+		| Nancy Greenberg   | Finance         | Seattle             |
+		| Den Raphaely      | Purchasing      | Seattle             |
+		| Matthew Weiss     | Shipping        | South San Francisco |
+		| Michael Hartstein | Marketing       | Toronto             |
+		| Shelley Higgins   | Accounting      | Seattle             |
+		+-------------------+-----------------+---------------------+
+
+23.) Write a query in SQL to display the employee ID, job name, number of days worked in for all those jobs in department 8.
+-->
+	 select e.employee_id, j.job_title , (current_date() - e.hire_date) from employees e natural join jobs j where department_id=8;
+		
+		+-------------+----------------------+--------------------------------+
+		| employee_id | job_title            | (current_date() - e.hire_date) |
+		+-------------+----------------------+--------------------------------+
+		|         145 | Sales Manager        |                         250023 |
+		|         146 | Sales Manager        |                         240919 |
+		|         176 | Sales Representative |                         230700 |
+		|         177 | Sales Representative |                         230601 |
+		|         178 | Sales Representative |                         220500 |
+		|         179 | Sales Representative |                         210920 |
+		+-------------+----------------------+--------------------------------+
+
+24.) Write a query in SQL to display the full name (first and last name), and salary of those employees who working in any department 
+	located in London.
+-->	
+	 select concat(e.first_name,' ', e.last_name) Name, e.salary from employees e natural join departments d 
+	 natural join locations l where l.city='london';
+		
+		+--------------+---------+
+		| Name         | salary  |
+		+--------------+---------+
+		| Susan Mavris | 6500.00 |
+		+--------------+---------+
+		1 row in set (0.00 sec)
+
+25.)  Write a query in SQL to display full name(first and last name), job title, starting and ending date of last jobs for those employees 
+	with worked without a commission percentage.
+-->
+			DATA NOT AVAILABEL
+
+26.) Write a query in SQL to display the department name and number of employees in each of the department.
+-->
+	select d.department_name Department_names, count(e.department_id) from departments d 
+	left join employees e using(department_id) group by d.department_id;
+		
+		+------------------+------------------------+
+		| Department_names | count(e.department_id) |
+		+------------------+------------------------+
+		| Administration   |                      1 |
+		| Marketing        |                      2 |
+		| Purchasing       |                      6 |
+		| Human Resources  |                      1 |
+		| Shipping         |                      7 |
+		| IT               |                      5 |
+		| Public Relations |                      1 |
+		| Sales            |                      6 |
+		| Executive        |                      3 |
+		| Finance          |                      6 |
+		| Accounting       |                      1 |
+		| OPERATIONS       |                      0 |
+		+------------------+------------------------+
+
+27.) Write a query in SQL to display the full name (firt and last name ) of employee with ID and name of the country presently where (s)he 
+	is working.
+-->
+	select concat(e.first_name,' ', e.last_name) Name, e.employee_id Employee_id, c.country_name from employees e natural join departments natural join locations natural join countries c ;
+	
+		+-------------------+-------------+--------------------------+
+		| Name              | Employee_id | country_name             |
+		+-------------------+-------------+--------------------------+
+		| Michael Hartstein |         201 | Canada                   |
+		| Pat Fay           |         202 | Canada                   |
+		| Hermann Baer      |         204 | Germany                  |
+		| Susan Mavris      |         203 | United Kingdom           |
+		| John Russell      |         145 | United Kingdom           |
+		| Karen Partners    |         146 | United Kingdom           |
+		| Jonathon Taylor   |         176 | United Kingdom           |
+		| Jack Livingston   |         177 | United Kingdom           |
+		| Kimberely Grant   |         178 | United Kingdom           |
+		| Charles Johnson   |         179 | United Kingdom           |
+		| Alexander Hunold  |         103 | United States of America |
+		| Bruce Ernst       |         104 | United States of America |
+		| David Austin      |         105 | United States of America |
+		| Valli Pataballa   |         106 | United States of America |
+		| Diana Lorentz     |         107 | United States of America |
+		| Matthew Weiss     |         120 | United States of America |
+		| Adam Fripp        |         121 | United States of America |
+		| Payam Kaufling    |         122 | United States of America |
+		| Shanta Vollman    |         123 | United States of America |
+		| Irene Mikkilineni |         126 | United States of America |
+		| Sarah Bell        |         192 | United States of America |
+		| Britney Everett   |         193 | United States of America |
+		| Jennifer Whalen   |         200 | United States of America |
+		| Den Raphaely      |         114 | United States of America |
+		| Alexander Khoo    |         115 | United States of America |
+		| Shelli Baida      |         116 | United States of America |
+		| Sigal Tobias      |         117 | United States of America |
+		| Guy Himuro        |         118 | United States of America |
+		| Karen Colmenares  |         119 | United States of America |
+		| Steven King       |         100 | United States of America |
+		| Neena Kochhar     |         101 | United States of America |
+		| Lex De Haan       |         102 | United States of America |
+		| Nancy Greenberg   |         108 | United States of America |
+		| Daniel Faviet     |         109 | United States of America |
+		| John Chen         |         110 | United States of America |
+		| Ismael Sciarra    |         111 | United States of America |
+		| Jose Manuel Urman |         112 | United States of America |
+		| Luis Popp         |         113 | United States of America |
+		| Shelley Higgins   |         205 | United States of America |
+		+-------------------+-------------+--------------------------+
+

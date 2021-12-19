@@ -1,0 +1,120 @@
+SQL Exercise 4
+
+1.Display the minimum Status in the Supplier table.
+ SELECT MIN(STATUS) FROM SUPPLIERS;
++-------------+
+| MIN(STATUS) |
++-------------+
+|          10 |
++-------------+
+
+2.Display the maximum Weight in the Parts table.
+SELECT MAX(WEIGHT) FROM PARTS;
++-------------+
+| MAX(WEIGHT) |
++-------------+
+|        19.0 |
++-------------+
+
+3.Display the average Weight of the Parts.
+ SELECT ROUND(AVG(WEIGHT),2) FROM PARTS;
++----------------------+
+| ROUND(AVG(WEIGHT),2) |
++----------------------+
+|                15.17 |
++----------------------+
+
+4.Display the total Quantity sold for part ‘P1’.
+SELECT P.PNAME, SUM(O.QTY) FROM ORDERS O JOIN PARTS P ON O.PNUM=P.PNUM WHERE P.PNUM=1;
++-------+------------+
+| PNAME | SUM(O.QTY) |
++-------+------------+
+| Nut   |        600 |
++-------+------------+
+
+5.Display the total Quantity sold for each part.
+SELECT P.PNAME, SUM(O.QTY) FROM ORDERS O JOIN PARTS P ON O.PNUM=P.PNUM group by p.pname;
++-------+------------+
+| PNAME | SUM(O.QTY) |
++-------+------------+
+| Nut   |        600 |
+| Bolt  |       1000 |
+| Screw |        900 |
+| Cam   |        500 |
+| Cog   |        100 |
++-------+------------+
+
+6.Display the average Quantity sold for each part.
+SELECT P.PNAME, ROUND(avg(O.QTY),2) AVG_SALE FROM ORDERS O JOIN PARTS P ON O.PNUM=P.PNUM group by p.pname;
++-------+----------+
+| PNAME | AVG_SALE |
++-------+----------+
+| Nut   |   300.00 |
+| Bolt  |   250.00 |
+| Screw |   300.00 |
+| Cam   |   250.00 |
+| Cog   |   100.00 |
++-------+----------+
+
+7.Display the maximum Quantity sold for each part, provided the maximum Quantity is greater than 800.
+select pnum , MAX(qty) from orders group by pnum having SUM(qty) > 800 ;
++------+----------+
+| pnum | MAX(qty) |
++------+----------+
+|    2 |      400 |
++------+----------+
+								OR
+select pnAME , MAX(qty) from orders NATURAL JOIN PARTS group by pnum having SUM(qty) > 800 ;
++-------+----------+
+| pnAME | MAX(qty) |
++-------+----------+
+| Bolt  |      400 |
++-------+----------+
+
+8.Display the Status and the count of Suppliers with that Status.
+SELECT STATUS , COUNT(STATUS) FROM SUPPLIERS GROUP BY STATUS;
++--------+---------------+
+| STATUS | COUNT(STATUS) |
++--------+---------------+
+|     20 |             2 |
+|     10 |             1 |
+|     30 |             2 |
++--------+---------------+
+
+9.Display the count of Projects going on in different cities.
+##################
+
+10.What is the difference between COUNT(Status) and COUNT(*) ?
+SELECT COUNT(STATUS) ,COUNT(*) FROM SUPPLIERS;
++---------------+----------+
+| COUNT(STATUS) | COUNT(*) |
++---------------+----------+
+|             5 |        5 |
++---------------+----------+
+
+
+11.Display the Status and the Count of Suppliers with that Status in the following format as shown below:-
+
+Status	Count
+Ten		1
+Twenty	2
+Thirty	3
+---------->
+
+select
+    -> case
+    -> when status = 10 then 'ten'
+    -> when status = 20 then 'twenty'
+    -> when status = 30 then 'thirty'
+    -> end as status,
+    -> count(status) from suppliers group by status;
++--------+---------------+
+| status | count(status) |
++--------+---------------+
+| twenty |             2 |
+| ten    |             1 |
+| thirty |             2 |
++--------+---------------+
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------

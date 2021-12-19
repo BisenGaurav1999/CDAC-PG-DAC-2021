@@ -1,0 +1,24 @@
+1. List department details in which no employee is working.
+-->
+	select * from departments d where d.department_id<> any (select distinct e.department_id from employees e where d.department_id=e.department_id);
+
+	
+2. Find list of employees which are earning less then avg salary of there department
+-->
+	SELECT concat(e.first_name," ",e.last_name) as Name, e.department_id FROM EMPLOYEES E WHERE E.SALARY<(SELECT AVG(E.SALARY) FROM EMPLOYEES E JOIN DEPARTMENTS D USING(DEPARTMENT_ID) );
+
+3. Display list of employees which are earning more then the corresponding manager.
+-->
+	SELECT concat(e.first_name," ",e.last_name) as Name from employees e
+ where e.salary > (select m.salary from employees m where e.manager_id=m.employee_id);
+
+4. Display list of employees which are not managed by anyone
+-->
+	SELECT concat(e.first_name," ",e.last_name) as Name from employees e
+	where not exists (select m.manager_id from employees m where m.employee_id=e.manager_id);
+
+5. Display department details where avg salary is more then 1000
+-->
+	select * from departments d
+	where (select avg(e.salary) from employees e group by d.department_id)>1000;
+

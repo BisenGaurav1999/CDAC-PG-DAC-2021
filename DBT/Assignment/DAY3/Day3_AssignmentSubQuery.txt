@@ -1,0 +1,73 @@
+							SQL Exercise 6
+
+1.Display all the Suppliers with the same Status as the supplier, ‘CLARK’.
+
+ SELECT SNAME FROM SUPPLIERS WHERE STATUS IN(SELECT STATUS FROM SUPPLIERS WHERE SNAME='CLARK') AND SNAME<>'CLARK';
++-------+
+| SNAME |
++-------+
+| Smith |
++-------+
+
+2.Display all the Employees in the same department as the employee ‘MILLER’.
+
+SELECT ENAME FROM EMP WHERE DEPTNO=(SELECT DEPTNO FROM EMP WHERE ENAME = 'MILLER') AND ENAME<>'MILLER';
+
+3.Display all the Parts which have more Weight than all the Red parts.
+SELECT DISTINCT(PNAME) FROM PARTS WHERE WEIGHT >ANY (SELECT WEIGHT FROM PARTS WHERE COLOR='RED');
++-------+
+| PNAME |
++-------+
+| Bolt  |
+| Cog   |
+| Screw |
++-------+
+									OR
+SELECT DISTINCT(PNAME) FROM PARTS WHERE WEIGHT >ANY (SELECT MAX(WEIGHT) FROM PARTS WHERE COLOR='RED');
+Empty set (0.00 sec)
+
+4.Display all the Projects going on in the same city as the project ‘TAPE’.
+#####################
+
+5.Display all the Parts with Weight less than all the Green parts.
+
+SELECT DISTINCT(PNAME) FROM PARTS WHERE WEIGHT <ANY (SELECT MIN(WEIGHT) FROM PARTS WHERE COLOR='GREEN');
++-------+
+| PNAME |
++-------+
+| Cam   |
+| Nut   |
+| Screw |
++-------+
+
+6.Display the name of the Supplier who has sold the maximum Quantity (in one sale).
+
+select sname from suppliers where snum IN (SELECT SNUM FROM ORDERS WHERE QTY=(SELECT MAX(QTY) FROM ORDERS));
++-------+
+| sname |
++-------+
+| Clark |
+| Jones |
+| Smith |
++-------+
+
+7.Display the name of the Employee with the minimum Salary.
+
+SELECT ENAME FROM EMP WHERE SAL IN (SELECT MIN(Sal) from emp);
+
+SMITH
+
+8.Display the name of the Supplier who has sold the maximum overall Quantity (sum of Sales).
+
+select sname from suppliers where snum=(select snum from (select snum ,sum(qty) sumqty from orders group by snum) d having max(sumqty));
++-------+
+| sname |
++-------+
+| Smith |
++-------+
+
+9.Display the name of the Department with the maximum number of Employees.
+
+ select DNAME from DEPT where DEPTNO = (select DEPTNO from (select DEPTNO ,COUNT(DEPTNO) qty from EMP group by DEPTNO) d order by qty desc limit 1);
+	
+	sales

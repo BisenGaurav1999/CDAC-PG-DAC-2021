@@ -1,0 +1,89 @@
+1. Create a trigger to raise error if employee salary is less then avg salary of corresponding department.
+-->
+		DELIMITER \\
+		drop trigger if exists avg_sal_checker\\
+		CREATE TRIGGER avg_sal_checker
+		after UPDATe
+		on EMP
+		for each row
+		BEGIN
+
+		if new.sal< (select avg(sal) from emp group by deptno having deptno=new.deptno) then
+		SIGNAL SQLSTATE '45000' SET message_text='Employee salary is less than avg sal of department';
+			 END IF;
+		end \\
+
+		select * from emp;
+		update emp set sal=850 where empno=7369;
+
+													OR
+													
+		Delimiter //
+		CREATE TRIGGER chk_avgsal
+		BEFORE INSERT 
+		ON emp
+		FOR EACH ROW
+
+		BEGIN
+
+		IF NEW.sal < (select avg(sal) from emp group by deptno having deptno = NEW.deptno) THEN
+			SIGNAL SQLSTATE '45000' SET message_text = ' Employee salary is less than average of his department salary ' ;
+		END IF ;
+		END//
+
+													
+2. Add an additional column called to emp table called as last_updated_by and last_updated_date.
+   Upon each update issued on emp table, these columns must be updated by database user and current date (use function current_user() and SYSDATE())
+-->
+		/*Add an additional column called to emp table called as last_updated_by and last_updated_date.
+		   Upon each update issued on emp table, these columns must be updated by database user and current date (use function current_user() and SYSDATE())
+		*/
+		alter table emp add (last_updated_by varchar(20)  , last_updated_date date );
+		delimiter //
+		drop trigger if exists updatemanager //
+		create trigger  updatamanager
+		before update
+		on emp
+		for each row
+		begin
+		set new.last_updated_by=current_user();
+		set new.last_updated_date=sysdate();
+		end //
+
+		select * from emp;
+		update emp set sal=850 where deptno=20;
+   
+3.  Upon delete of department records from dept table. The corresponding employees records must be deleted as well. 
+	Implement this requirement with trigger
+-->
+		-- Upon delete of department records from dept table. The corresponding employees records must be deleted as well. 
+		-- Implement this requirement with trigger
+
+		delimiter //
+		
+		drop trigger if exists delete_trig //
+		create trigger delete_trig 
+		before delete on dept
+		for each row 
+		begin 
+		delete from emp where deptno=old.deptno;
+		end //
+
+		delete from dept where deptno=20;
+		select * from emp;
+
+4. Create a table with following design
+
+      Table NAme : scott_schema_audit
+	   Columns : table_name, operation_name, db_user, change_date
+
+   Populate this table each time the user perform any DML command on emp,dept or salgrade table. Sample data will look like
+                 table_name, operation_name, db_user, change_date
+				 emp          update         root@localhost   2020-09-14
+				 dept         delete         root@localhost   2020-09-15
+				 ....
+-->
+				 
+	         
+
+   

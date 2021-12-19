@@ -1,0 +1,119 @@
+Insert Documents in emp collection
+> db.emp.insert([
+{eno:1,ename:"Sachin",sal:6000,desig:"manager",dept:"Purchase"},
+{eno:2,ename:"Dhoni",sal:5000,desig:"manager",dept:"Sales"},
+{eno:3,ename:"Kohli",sal:3000,desig:"clerk",dept:"Admin"},
+{eno:4,ename:"Dravid",sal:4000,desig:"manager",dept:"Purchase"},
+{eno:5,ename:"Bumrah",sal:3500,desig:"manager",dept:"Sales"},
+{eno:6,ename:"Jadeja",sal:2500,desig:"clerk",dept:"Admin"},
+{eno:7,ename:"Rohit",sal:4000,desig:"manager",dept:"Sales"}])
+
+1) List all emplyees name with their salary who are in admin department.
+
+> db.emp.find({"dept":"Admin"},{"ename":1});
+{ "_id" : ObjectId("619b79f9b901253496b5fad9"), "ename" : "Kohli" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadc"), "ename" : "Jadeja" }
+
+2) List all emplyees name with their salary and designation who are in Purchase department.
+> db.emp.find({"dept":"Purchase"},{"ename":1,"salary":1,"desig":1});
+{ "_id" : ObjectId("619b79f9b901253496b5fad7"), "ename" : "Sachin", "desig" : "manager" }
+{ "_id" : ObjectId("619b79f9b901253496b5fada"), "ename" : "Dravid", "desig" : "manager" }
+
+
+3) List all employees no, name, salary who are in the Sales department and Designation is Manager.
+
+> db.emp.find({$and: [{"dept":"Sales"},{"desig":"manager"}]},{ename:1,eno:1,salary:1,_id:0});
+{ "eno" : 2, "ename" : "Dhoni" }
+{ "eno" : 5, "ename" : "Bumrah" }
+{ "eno" : 7, "ename" : "Rohit" }
+
+
+4) calculate Annual salary of each emplyees
+> db.emp.aggregate([{$project:{"ename":1,annualsal:{$multiply:["$sal",12]}}}]);
+{ "_id" : ObjectId("619b79f9b901253496b5fad7"), "ename" : "Sachin", "annualsal" : 72000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fad8"), "ename" : "Dhoni", "annualsal" : 60000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fad9"), "ename" : "Kohli", "annualsal" : 36000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fada"), "ename" : "Dravid", "annualsal" : 48000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fadb"), "ename" : "Bumrah", "annualsal" : 42000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fadc"), "ename" : "Jadeja", "annualsal" : 30000 }
+{ "_id" : ObjectId("619b79f9b901253496b5fadd"), "ename" : "Rohit", "annualsal" : 48000 }
+
+
+
+5) Convert the names of the emplyees in Lower case and display only no and name of each emplyees.
+
+> db.emp.aggregate([{$project:{"eno":1,"ename":1,Employee:{$toLower:['$ename']}}}]);
+{ "_id" : ObjectId("619b79f9b901253496b5fad7"), "eno" : 1, "ename" : "Sachin", "Employee" : "sachin" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad8"), "eno" : 2, "ename" : "Dhoni", "Employee" : "dhoni" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad9"), "eno" : 3, "ename" : "Kohli", "Employee" : "kohli" }
+{ "_id" : ObjectId("619b79f9b901253496b5fada"), "eno" : 4, "ename" : "Dravid", "Employee" : "dravid" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadb"), "eno" : 5, "ename" : "Bumrah", "Employee" : "bumrah" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadc"), "eno" : 6, "ename" : "Jadeja", "Employee" : "jadeja" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadd"), "eno" : 7, "ename" : "Rohit", "Employee" : "rohit" }
+
+
+
+
+db.emp.aggregate([{$project:{eno:1,ename:1,_id:0,Employee:{$toLower:['$ename']}}}])
+
+6) Display each document of the collection emplyee the total salary of each emplyee should be displayed department wise.
+$concat
+
+> db.emp.aggregate([{$match:{desig:"manager"}},{$group:{_id:"$dept",total:{$sum:"$sal"}}}]);
+{ "_id" : "Purchase", "total" : 10000 }
+{ "_id" : "Sales", "total" : 12500 }
+{ "_id" : "Sales", "salary" : 12500 }
+
+
+
+7) Findout Total Salary manager designation wise.
+> db.emp.aggregate([{$match:{desig:"manager"}},{$group:{_id:"$dept",total:{$sum:"$sal"}}}]);
+
+
+
+8) Find The Average Salary of each department in emp collection.
+> db.emp.aggregate([{$group:{_id:"$dept",avg:{$avg:"$sal"}}}])
+{ "_id" : "Admin", "avg" : 2750 }
+{ "_id" : "Sales", "avg" : 4166.666666666667 }
+{ "_id" : "Purchase", "avg" : 5000 }
+
+9) Find The MAX Salary of each department in emp collection.
+
+> db.emp.aggregate([{$group:{_id:"$dept",Max:{$max:"$sal"}}}])
+{ "_id" : "Admin", "Max" : 3000 }
+{ "_id" : "Purchase", "Max" : 6000 }
+{ "_id" : "Sales", "Max" : 5000 }
+
+10)update The Document with null value in desig field where name is kohli.
+> db.emp.find()
+{ "_id" : ObjectId("619b79f9b901253496b5fad7"), "eno" : 1, "ename" : "Sachin", "sal" : 6000, "desig" : "manager", "dept" : "Purchase" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad8"), "eno" : 2, "ename" : "Dhoni", "sal" : 5000, "desig" : "manager", "dept" : "Sales" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad9"), "eno" : 3, "ename" : "Kohli", "sal" : 3000, "desig" : null, "dept" : "Admin" }
+{ "_id" : ObjectId("619b79f9b901253496b5fada"), "eno" : 4, "ename" : "Dravid", "sal" : 4000, "desig" : "manager", "dept" : "Purchase" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadb"), "eno" : 5, "ename" : "Bumrah", "sal" : 3500, "desig" : "manager", "dept" : "Sales" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadc"), "eno" : 6, "ename" : "Jadeja", "sal" : 2500, "desig" : "clerk", "dept" : "Admin" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadd"), "eno" : 7, "ename" : "Rohit", "sal" : 4000, "desig" : "manager", "dept" : "Sales" }
+>
+
+
+
+11) To remove design Field having Null Values in emp Collection.
+
+> db.emp.find()
+{ "_id" : ObjectId("619b79f9b901253496b5fad7"), "eno" : 1, "ename" : "Sachin", "sal" : 6000, "desig" : "manager", "dept" : "Purchase" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad8"), "eno" : 2, "ename" : "Dhoni", "sal" : 5000, "desig" : "manager", "dept" : "Sales" }
+{ "_id" : ObjectId("619b79f9b901253496b5fad9"), "eno" : 3, "ename" : "Kohli", "sal" : 3000, "dept" : "Admin" }
+{ "_id" : ObjectId("619b79f9b901253496b5fada"), "eno" : 4, "ename" : "Dravid", "sal" : 4000, "desig" : "manager", "dept" : "Purchase" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadb"), "eno" : 5, "ename" : "Bumrah", "sal" : 3500, "desig" : "manager", "dept" : "Sales" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadc"), "eno" : 6, "ename" : "Jadeja", "sal" : 2500, "desig" : "clerk", "dept" : "Admin" }
+{ "_id" : ObjectId("619b79f9b901253496b5fadd"), "eno" : 7, "ename" : "Rohit", "sal" : 4000, "desig" : "manager", "dept" : "Sales" }
+
+
+========================
+
+>db.foods.insert([
+{_id:1,fruits:['banana','apple','cherry']},{_id:2,fruits:['orange','watermelon','mango']},{_id:3,fruits:['pinaple','strawberry','grapes']},{_id:4,fruits:['banana','strawberry','grapes']},{_id:5,fruits:['orange','grapes']}])
+
+display those documents from in food collection which has fruits array consituted of banana,apple,cherry 
+
+display those documents From food Collection which has fruits array having a banana as an element.

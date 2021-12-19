@@ -1,0 +1,193 @@
+* Create database EMP and Make Collection With name "EMPL" and Follow Queries 
+
+*Created Database
+> use emp
+ switched to DB emp
+ 
+*Create Collection
+> db.createCollection("empl")
+
+*Insert Records Into EMPL Collection
+> db.empl.insert([
+ {no:1,name:"ST",salary:2000,role:"OB"},
+ {no:2,name:"MSD",salary:1500,role:"WK"},
+ {no:3,name:"YS",salary:1000,role:"ALR"},
+ {no:4,name:"RD",salary:1000,role:"MOB"},
+ {no:5,name:"RS",salary:500,role:"OB"},
+ {no:6,name:"BK",salary:500,role:"MOB"},
+ {no:7,name:"VK",salary:300,role:"BW"},
+ {no:8,name:"JB",salary:400,role:"BW"},
+ {no:9,name:"HP",salary:400,role:"ALR"},
+ {no:10,name:"VS",salary:300,role:"OB"}])
+
+*Update Salary Of Employee where Name is "ST" by +8000
+
+
+> db.empl.update({"name":"ST"},{$inc:{salary:8000}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.empl.find()
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 18000, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "WK" }
+{ "_id" : ObjectId("619b659e96611f2a709af590"), "no" : 3, "name" : "YS", "salary" : 9000, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af591"), "no" : 4, "name" : "RD", "salary" : 9000, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af592"), "no" : 5, "name" : "RS", "salary" : 8500, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af593"), "no" : 6, "name" : "BK", "salary" : 8500, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af594"), "no" : 7, "name" : "VK", "salary" : 8300, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af595"), "no" : 8, "name" : "JB", "salary" : 8400, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af596"), "no" : 9, "name" : "HP", "salary" : 8400, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af597"), "no" : 10, "name" : "VS", "salary" : 8300, "role" : "OB" }
+
+
+
+
+*Update Salary Of All Employee by giving an increment of +8000 each
+
+
+> db.empl.update({},{$inc : {salary:8000}},{multi:true});
+WriteResult({ "nMatched" : 10, "nUpserted" : 0, "nModified" : 10 })
+> db.empl.find()
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 10000, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "WK" }
+{ "_id" : ObjectId("619b659e96611f2a709af590"), "no" : 3, "name" : "YS", "salary" : 9000, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af591"), "no" : 4, "name" : "RD", "salary" : 9000, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af592"), "no" : 5, "name" : "RS", "salary" : 8500, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af593"), "no" : 6, "name" : "BK", "salary" : 8500, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af594"), "no" : 7, "name" : "VK", "salary" : 8300, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af595"), "no" : 8, "name" : "JB", "salary" : 8400, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af596"), "no" : 9, "name" : "HP", "salary" : 8400, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af597"), "no" : 10, "name" : "VS", "salary" : 8300, "role" : "OB" }
+>
+
+
+
+
+*update role of "MSD" as "C and WK"
+
+> db.empl.update({"name":"MSD"},{$set : {"role":"C and WK"}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.empl.find()
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 18000, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "C and WK" }
+
+
+*Add a New Field remark to document with name "RS" set Remark as WC
+
+> db.empl.update({"name":"RS"},{$set : {"remark":"WC"}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.empl.find({"name":"RS"}).pretty()
+{
+        "_id" : ObjectId("619b659e96611f2a709af592"),
+        "no" : 5,
+        "name" : "RS",
+        "salary" : 8500,
+        "role" : "OB",
+        "remark" : "WC"
+}
+
+
+*Add a New Field As Number 11,name AK,Salary 10000,role coch without using insert statement. But for Doing So You should have a Record Added woth number 11.
+
+> db.empl.update({"no":11},{$set:{"name":"AK","role":"coach","salary":10000}},{upsert:true});
+WriteResult({
+        "nMatched" : 0,
+        "nUpserted" : 1,
+        "nModified" : 0,
+        "_id" : ObjectId("619b743599aeab9feff1d47e")
+})
+
+> db.empl.find({"name":"AK"}).pretty()
+{
+        "_id" : ObjectId("619b743599aeab9feff1d47e"),
+        "no" : 11,
+        "name" : "AK",
+        "role" : "coach",
+        "salary" : 10000
+}
+
+
+*remove added New Field
+> db.empl.remove({"no":11},{});
+WriteResult({ "nRemoved" : 1 })
+
+
+
+*Update the Field "RD" by multiplying with salary by 2
+
+> db.empl.update({"name":"RD"},{$mul:{salary : 2}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.empl.find().pretty()
+{
+        "_id" : ObjectId("619b659e96611f2a709af591"),
+        "no" : 4,
+        "name" : "RD",
+        "salary" : 18000,
+        "role" : "MOB"
+}
+
+
+*To Find Document From the empl collection where name begins with s
+
+> db.emp.find({"ENAME":{$regex:"^s",$options:"$i"}}).pretty();
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 18000, "role" : "OB" }
+
+
+*To Find Document From the empl collection where name begins with R
+
+> db.empl.find({"name":/^R/});
+{ "_id" : ObjectId("619b659e96611f2a709af591"), "no" : 4, "name" : "RD", "salary" : 18000, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af592"), "no" : 5, "name" : "RS", "salary" : 8500, "role" : "OB", "remark" : "WC" }
+
+*To Find Document From the empl collection where name ends with K
+> db.empl.find({"name":/K$/});
+{ "_id" : ObjectId("619b659e96611f2a709af593"), "no" : 6, "name" : "BK", "salary" : 8500, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af594"), "no" : 7, "name" : "VK", "salary" : 8300, "role" : "BW" }
+
+
+*To Find Document From the empl collection where name ends with D
+
+> db.empl.find({"name":/D$/});
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "C and WK" }
+{ "_id" : ObjectId("619b659e96611f2a709af591"), "no" : 4, "name" : "RD", "salary" : 18000, "role" : "MOB" }
+
+
+*To Find Document From the empl collection where name has S in any position
+
+> db.emp.find({"ENAME":{$regex:"(s)",$options:"$i"}}).pretty();
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 18000, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "C and WK" }
+{ "_id" : ObjectId("619b659e96611f2a709af590"), "no" : 3, "name" : "YS", "salary" : 9000, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af592"), "no" : 5, "name" : "RS", "salary" : 8500, "role" : "OB", "remark" : "WC" }
+{ "_id" : ObjectId("619b659e96611f2a709af597"), "no" : 10, "name" : "VS", "salary" : 8300, "role" : "OB" }
+
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+Regular Expression
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+(Note: Use Case sensitive allow For that write in Option: "i")
+
+* To Find Document From the empl collection where name begins with S
+
+* To Find Document From the empl collection where name begins with S
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+ Use of $in and $nin (in and notin)
+ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+(Note: There will not use {} braces in that $in and $nin)
+
+* Display Documents where in empl collection Field have OB,MOB
+
+> db.empl.find({"role": {$in :["MOB","OB"]}});
+{ "_id" : ObjectId("619b659e96611f2a709af58e"), "no" : 1, "name" : "ST", "salary" : 18000, "role" : "OB" }
+{ "_id" : ObjectId("619b659e96611f2a709af591"), "no" : 4, "name" : "RD", "salary" : 18000, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af592"), "no" : 5, "name" : "RS", "salary" : 8500, "role" : "OB", "remark" : "WC" }
+{ "_id" : ObjectId("619b659e96611f2a709af593"), "no" : 6, "name" : "BK", "salary" : 8500, "role" : "MOB" }
+{ "_id" : ObjectId("619b659e96611f2a709af597"), "no" : 10, "name" : "VS", "salary" : 8300, "role" : "OB" }
+ 
+
+* Display Documents where in empl collection Field not have OB,MOB
+
+> db.empl.find({"role": {$nin :["MOB","OB"]}});
+{ "_id" : ObjectId("619b659e96611f2a709af58f"), "no" : 2, "name" : "MSD", "salary" : 9500, "role" : "C and WK" }
+{ "_id" : ObjectId("619b659e96611f2a709af590"), "no" : 3, "name" : "YS", "salary" : 9000, "role" : "ALR" }
+{ "_id" : ObjectId("619b659e96611f2a709af594"), "no" : 7, "name" : "VK", "salary" : 8300, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af595"), "no" : 8, "name" : "JB", "salary" : 8400, "role" : "BW" }
+{ "_id" : ObjectId("619b659e96611f2a709af596"), "no" : 9, "name" : "HP", "salary" : 8400, "role" : "ALR" }

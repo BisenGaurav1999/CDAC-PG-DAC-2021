@@ -1,0 +1,115 @@
+Procedure
+==========
+1. Prepare a program which can perform following operation
+	- Lookout for tables which has missing constraints
+	- Display list of those tables
+	
+----->
+		use dac;    -- step1
+		
+		delimiter //      -- step2
+		drop procedure if exists table_available //
+		create procedure table_available(p_table_name varchar(20))
+
+		BEGIN
+
+		SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES 
+		WHERE
+		TABLE_NAME NOT IN(SELECT TABLE_NAME FROM information_schema.table_constraints) 
+		And table_schema=p_table_name;
+
+		END//
+		
+		call table_available('dac');      -- step3
+			
+	
+2. Prepare a program to delete the data from emp. It will receive two inputs employee number and employee name. 
+     If employee number is passed as null then delete the data based on employee name.
+      Backup the deleted data to employee_backup table.
+
+----->
+			use dac;
+			DELIMITER #
+			drop procedure if exists delete_date#
+			CREATE procedure delete_date( emp_no int unsigned, emp_name varchar(20))
+			BEGIN
+				IF emp_no is null
+				then
+					CREATE table  if not exists emp_c like emp;
+					alter table emp_c modify empno int unsigned null ;
+					insert into emp_c select * from emp where ename=emp_name ;
+					delete from emp where ename=emp_name;
+				
+				else
+					CREATE table  if not exists emp_c like emp;
+					alter table emp_c modify empno int unsigned null ;
+					insert into emp_c select * from emp where ename=emp_name and empno=emp_no;
+					delete from emp where ename=emp_name and empno=emp_no;
+			end if;
+			END#
+			show create table emp_c;
+			call delete_date(null,'scott');
+
+3. Prepare a program to insert new record in employee table. it will take the input of employee data.
+    If salary is provided as null then consider the salary as highest salary earned by any employee in same department. If comm is not provided then assume it as 200$
+---->
+
+			delimiter //
+			drop procedure if exists insert_data //
+			create procedure insert_data(empno1 int,ename1 varchar(20),job1 varchar(20),mgr1 int,salary1 int,comm1 int, 
+			deptno1 int)
+			begin
+					if salary1 is null
+						then select max(sal) into salary1 from emp group by deptno having deptno=deptno1;
+					end if;
+					
+					if comm1 is null
+						then set comm1=200;
+					end if;
+					
+					insert into emp values (empno1, ename1, job1, mgr1,CURdate(), salary1, comm1, deptno1);
+			end //
+
+			CALL INSERT_DATA(7700,'MATHEW','CLERK',7566,NULL,NULL,20);
+
+4. Prepare a program to receive the input as table name and column name. Add primary key constraint on provided table's column.
+---->
+			DELIMITER //
+			DROP procedure IF exists ADD_KEY //
+			CREATE procedure ADD_KEY(TABLE_NAME varchar(20), COLUMN_NAME varchar(20))
+			BEGIN
+			SET @KEY=CONCAT('ALTER TABLE ', ( select TABLE_NAME), ' ADD PRIMARY KEY (',(select COLUMN_NAME),');');
+			PREPARE stmnt1 from @key;
+			execute stmnt1;
+			deallocate prepare stmnt1;
+			end//
+
+
+			call add_key('emp','empno');
+			show create table emp;
+
+
+5. Prepare a program to list those employee who are earning less then avg of there deparment. 
+	This program may take input as (p_salary_fix BOOLEAN).
+    If the input is given as true then these employees salary must be set to AVG Salary + 100$.
+--->
+		delimiter #
+		Create procedure AssQues51 (
+		p_salary_fix boolean)
+		begin 
+
+		SELECT ename
+		  FROM emp p
+		 WHERE sal < (SELECT AVG(sal)
+		                FROM emp k
+		               WHERE k.DEPTNO = p.deptno);
+		
+		IF p_salary_fix THEN
+				UPDATE emp a , (SELECT deptno,AVG(sal) avg_sal,AVG(sal) + 100 upd_sal
+						          FROM emp 
+						      GROUP BY deptno) e
+				SET sal = e.upd_sal
+			   WHERE a.deptno = e.deptno
+		         AND a.sal < e.avg_sal;
+		END IF;
+		END#
